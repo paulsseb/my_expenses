@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:my_expenses/category_model.dart';
+import 'package:my_expenses/models/category_model.dart';
 
 void main() {
   runApp(MyApp());
@@ -24,7 +24,7 @@ class _HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   List<String> _tabs = ['Home', 'Category', 'Report'];
-  List<CategoryModel> _IsCategories = List<CategoryModel>();
+  List<CategoryModel> _IsCategories = <CategoryModel>[];
 
   @override
   void initState() {
@@ -68,6 +68,7 @@ class _HomePageState extends State<HomePage>
     _IsCategories.add(cat4);
   }
 
+  // creates a list based on the items available in the _IsCategories
   Widget _getCategoryTab() {
     return ListView.builder(
       itemCount: _IsCategories.length,
@@ -83,7 +84,7 @@ class _HomePageState extends State<HomePage>
             onTap: () {},
             leading: Icon(
               IconData(category.iconCodePoint, fontFamily: 'MaterialIcons'),
-              color: Theme.of(context).accentColor,
+              color: Theme.of(context).secondaryHeaderColor,
             ),
             title: Text(
               category.title,
@@ -119,11 +120,7 @@ class _HomePageState extends State<HomePage>
               "Home",
               style: Theme.of(context).textTheme.bodyText1,
             )),
-            Center(
-                child: Text(
-              "Category",
-              style: Theme.of(context).textTheme.bodyText1,
-            )),
+            _getCategoryTab(),
             Center(
                 child: Text(
               "Reports",
