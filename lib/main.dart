@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:my_expenses/models/category_model.dart';
 
+import 'db/offline_db_provider.dart';
+
 void main() {
+  OfflineDbProvider.provider.initDB();
   runApp(MyApp());
 }
 

@@ -39,6 +39,9 @@ dependencies:
   built_value: ^6.1.6
   built_collection: ^4.1.0
 
+dependency_overrides:
+  gql: 0.13.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
