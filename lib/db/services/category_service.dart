@@ -1,6 +1,9 @@
 import 'package:built_collection/built_collection.dart';
 import 'package:my_expenses/models/category_model.dart';
 
+import '../../models/serializers.dart';
+import '../offline_db_provider.dart';
+
 abstract class CategoryServiceBase {
   Future<BuiltList<CategoryModel>> getAllCategories();
   Future<int> createCategory(CategoryModel category);

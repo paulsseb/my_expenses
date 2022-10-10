@@ -25,7 +25,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
-  late TabController _tabController;
+  TabController _tabController;
   List<String> _tabs = ['Home', 'Category', 'Report'];
   List<CategoryModel> _IsCategories = <CategoryModel>[];
 
