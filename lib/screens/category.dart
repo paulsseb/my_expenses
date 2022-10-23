@@ -1,4 +1,5 @@
 import 'package:my_expenses/models/category_model.dart';
+import 'package:my_expenses/screens/add_category.dart';
 import 'package:flutter/material.dart';
 
 class CategoryPage extends StatefulWidget {
@@ -57,32 +58,49 @@ class _CategoryPageState extends State<CategoryPage> {
   }
 
   Widget _getCategoryTab() {
-    return ListView.builder(
-      itemCount: _lsCateogies.length,
-      itemBuilder: (BuildContext ctxt, int index) {
-        var category = _lsCateogies[index];
-        return Container(
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(4.0),
-              border: Border.all(
-                  width: 1.0, style: BorderStyle.solid, color: Colors.white)),
-          margin: const EdgeInsets.all(12.0),
-          child: ListTile(
-            onTap: () {},
-            leading: Icon(
-              IconData(category.iconCodePoint, fontFamily: 'MaterialIcons'),
-              color: Theme.of(context).secondaryHeaderColor,
+    return Column(children: <Widget>[
+      Container(
+        padding: const EdgeInsets.all(12.0),
+        width: 200.0,
+        child: ElevatedButton(
+          child: const Text("Add New"),
+          onPressed: () {
+            //todo: implement navigation
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const AddCategory()),
+            );
+          },
+        ),
+      ),
+      Expanded(
+          child: ListView.builder(
+        itemCount: _lsCateogies.length,
+        itemBuilder: (BuildContext ctxt, int index) {
+          var category = _lsCateogies[index];
+          return Container(
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(4.0),
+                border: Border.all(
+                    width: 1.0, style: BorderStyle.solid, color: Colors.white)),
+            margin: const EdgeInsets.all(12.0),
+            child: ListTile(
+              onTap: () {},
+              leading: Icon(
+                IconData(category.iconCodePoint, fontFamily: 'MaterialIcons'),
+                color: Theme.of(context).secondaryHeaderColor,
+              ),
+              title: Text(
+                category.title,
+                style: Theme.of(context).textTheme.bodyText2,
+              ),
+              subtitle: Text(
+                category.desc,
+              ),
             ),
-            title: Text(
-              category.title,
-              style: Theme.of(context).textTheme.bodyText2,
-            ),
-            subtitle: Text(
-              category.desc,
-            ),
-          ),
-        );
-      },
-    );
+          );
+        },
+      )),
+    ]);
   }
 }
