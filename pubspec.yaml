@@ -39,6 +39,7 @@ dependencies:
   sqflite: ^1.1.5
   built_value: ^6.1.6
   built_collection: ^4.1.0
+  rxdart: ^0.22.0
 
 dependency_overrides:
   gql: 0.14.0
