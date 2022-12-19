@@ -1,76 +1,34 @@
 import 'package:flutter/material.dart';
 
-class AddCategory extends StatelessWidget {
-  const AddCategory({Key key}) : super(key: key);
+class AddCategory extends StatefulWidget {
+  @override
+  _AddCategoryState createState() => _AddCategoryState();
+}
+
+class _AddCategoryState extends State<AddCategory> {
+  CategoryBloc _categoryBloc;
+
+  @override
+  void initState() {
+    super.initState();
+    _categoryBloc = CategoryBloc(CategoryService());
+    _categoryBloc.updateCreateCategory(CategoryModel());
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Add New Category"),
+        title: Text("Add New Category"),
       ),
       body: Container(
-        padding: const EdgeInsets.all(12.0),
-        child: Column(
-          children: <Widget>[
-            const TextField(
-              decoration: InputDecoration(labelText: "Title"),
-            ),
-            const TextField(
-              decoration: InputDecoration(labelText: "Description"),
-              maxLines: 2,
-            ),
-            Expanded(
-                child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 12.0),
-                    child: _showIconGrid()))
-          ],
-        ),
-      ),
+          padding: EdgeInsets.all(12.0),
+          child: StreamBuilder(
+            stream: _categoryBloc.createCategoryStream,
+            builder: (ctxt, AsyncSnapshot<CategoryModel> catgorySnap) {
+              //todo:
+            },
+          )),
     );
   }
-}
-
-_showIconGrid() {
-  var ls = [
-    Icons.web_asset,
-    Icons.weekend,
-    Icons.whatshot,
-    Icons.widgets,
-    Icons.wifi,
-    Icons.wifi_lock,
-    Icons.wifi_tethering,
-    Icons.work,
-    Icons.wrap_text,
-    Icons.youtube_searched_for,
-    Icons.zoom_in,
-    Icons.zoom_out,
-    Icons.zoom_out_map,
-    Icons.restaurant_menu,
-    Icons.restore,
-    Icons.restore_from_trash,
-    Icons.restore_page,
-    Icons.ring_volume,
-    Icons.room,
-    Icons.exposure_zero,
-    Icons.extension,
-    Icons.face,
-    Icons.fast_forward,
-    Icons.fast_rewind,
-    Icons.fastfood,
-    Icons.favorite,
-    Icons.favorite_border,
-  ];
-
-  return GridView.count(
-    crossAxisCount: 8,
-    children: List.generate(ls.length, (index) {
-      var iconData = ls[index];
-      return IconButton(
-          onPressed: () {},
-          icon: Icon(
-            iconData,
-          ));
-    }),
-  );
 }
