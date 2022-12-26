@@ -7,6 +7,7 @@ import '../offline_db_provider.dart';
 abstract class CategoryServiceBase {
   Future<BuiltList<CategoryModel>> getAllCategories();
   Future<int> createCategory(CategoryModel category);
+  Future<int> deleteCategory(int categoryId);
 }
 
 class CategoryService implements CategoryServiceBase {
@@ -55,5 +56,13 @@ class CategoryService implements CategoryServiceBase {
     if (entity == null) return false;
 
     return entity.isNotEmpty;
+  }
+
+  @override
+  Future<int> deleteCategory(int categoryId) async {
+    var db = await OfflineDbProvider.provider.database;
+    var result =
+        db.delete("Category", where: "id = ?", whereArgs: [categoryId]);
+    return result;
   }
 }

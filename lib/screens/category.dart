@@ -44,6 +44,8 @@ class _CategoryPageState extends State<CategoryPage> {
             },
           ),
         ),
+// Stream builder allows auto update of UI i.e. when items in db list are deleted
+//We do not have to update the UI programmatically!
         StreamBuilder(
           stream: _categoryBloc.categoryListStream,
           builder:
@@ -60,11 +62,11 @@ class _CategoryPageState extends State<CategoryPage> {
                   return Container(
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(4.0),
-                        border: new Border.all(
+                        border: Border.all(
                             width: 1.0,
                             style: BorderStyle.solid,
                             color: Colors.white)),
-                    margin: EdgeInsets.all(12.0),
+                    margin: const EdgeInsets.all(12.0),
                     child: ListTile(
                       onTap: () {},
                       leading: Icon(
@@ -79,6 +81,12 @@ class _CategoryPageState extends State<CategoryPage> {
                       ),
                       subtitle: Text(
                         category.desc,
+                      ),
+                      trailing: IconButton(
+                        icon: const Icon(Icons.delete),
+                        color: Theme.of(context).primaryColorLight,
+                        onPressed: () =>
+                            _categoryBloc.deleteCategory(category.id),
                       ),
                     ),
                   );

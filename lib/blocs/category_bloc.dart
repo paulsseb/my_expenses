@@ -40,4 +40,11 @@ class CategoryBloc {
     _createCategoryController.close();
     _categoryListController.close();
   }
+
+  Future<void> deleteCategory(int categoryId) async {
+    await categoryService.deleteCategory(categoryId).then((value) {
+      //re- create list after delete
+      getCategories();
+    });
+  }
 }
