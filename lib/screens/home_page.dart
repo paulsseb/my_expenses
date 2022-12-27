@@ -1,4 +1,5 @@
 import 'package:my_expenses/screens/category.dart';
+import 'package:my_expenses/screens/dashboard_page.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -37,11 +38,7 @@ class _HomePageState extends State<HomePage>
         body: TabBarView(
           controller: _tabController,
           children: <Widget>[
-            Center(
-                child: Text(
-              "Home",
-              style: Theme.of(context).textTheme.bodyText1,
-            )),
+            const DashboardPage(),
             CategoryPage(),
             Center(
                 child: Text(
