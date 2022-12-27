@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:my_expenses/models/expense_model.dart';
+import 'package:my_expenses/screens/add_expense.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({Key key}) : super(key: key);
@@ -12,8 +13,12 @@ class DashboardPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton:
-          FloatingActionButton(onPressed: () {}, child: const Icon(Icons.add)),
+      floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.push(
+                context, MaterialPageRoute(builder: (context) => AddExpense()));
+          },
+          child: const Icon(Icons.add)),
       body: Column(
         children: <Widget>[
           Container(

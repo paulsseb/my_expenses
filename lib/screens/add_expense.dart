@@ -11,11 +11,21 @@ class AddExpense extends StatefulWidget {
 
 class _AddExpenseState extends State<AddExpense> {
   CategoryBloc categoryBloc;
+  FocusNode _focus = new FocusNode();
+  bool _showKeyboard = false;
+  TextEditingController _amountTextController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     categoryBloc = CategoryBloc(CategoryService());
+    _focus.addListener(_onFocusChange);
+  }
+
+  void _onFocusChange() {
+    setState(() {
+      _showKeyboard = _focus.hasFocus;
+    });
   }
 
   int selectedCategoryId = 0;
@@ -72,9 +82,69 @@ class _AddExpenseState extends State<AddExpense> {
                     }));
                   },
                 ),
+              ),
+              Column(
+                children: <Widget>[
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 12.0, horizontal: 12.0),
+                    child: TextField(
+                      controller: _amountTextController,
+                      focusNode: _focus,
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(
+                        labelText: "Amount",
+                      ),
+                      maxLines: 1,
+                      onChanged: (String text) {},
+                    ),
+                  ),
+                  _shortcutKeyboard(),
+                ],
               )
             ],
           ),
+        ));
+  }
+
+  Widget _shortcutKeyboard() {
+    var keyboardKeys = [
+      "50",
+      "100",
+      "500",
+      "1000",
+    ];
+    return Container(
+        height: 53.0,
+        decoration: BoxDecoration(
+          color: Theme.of(context).primaryColor,
+        ),
+        child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: keyboardKeys.length,
+          itemBuilder: (_, index) {
+            var key = keyboardKeys[index];
+            return Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6.0),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8.0),
+                  border: Border.all(
+                    color: Theme.of(context).colorScheme.secondary,
+                  )),
+              child: ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    _amountTextController.value =
+                        _amountTextController.value.copyWith(
+                      text: key,
+                      selection: TextSelection.collapsed(offset: key.length),
+                    );
+                  });
+                },
+                child: Text(key),
+              ),
+            );
+          },
         ));
   }
 }

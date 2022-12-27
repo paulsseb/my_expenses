@@ -29,10 +29,10 @@ class _CategoryPageState extends State<CategoryPage> {
     return Column(
       children: <Widget>[
         Container(
-          padding: EdgeInsets.all(12.0),
+          padding: const EdgeInsets.all(12.0),
           width: 200.0,
           child: ElevatedButton(
-            child: Text("Add New"),
+            child: const Text("Add New"),
             onPressed: () {
               Navigator.push(
                 context,
