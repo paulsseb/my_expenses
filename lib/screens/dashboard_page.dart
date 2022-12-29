@@ -91,7 +91,7 @@ class DashboardPage extends StatelessWidget {
               onPressed: () {},
             ),
             title: Text(
-              expense.title + " - Rs." + expense.amount.toString(),
+              expense.title + " - Ugx." + expense.amount.toString(),
               style: Theme.of(context).textTheme.bodyText1,
             ),
             subtitle: Text(
