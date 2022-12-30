@@ -9,7 +9,7 @@ const String initDbScript = """
     );
   """;
 const String createExpenseDbScript = """
-  CREATE TABLE EXPENSE (
+  CREATE TABLE Expense (
       id INTEGER PRIMARY KEY,
       categoryId INTEGER, 
       title TEXT,

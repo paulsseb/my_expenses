@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:my_expenses/models/category_model.dart';
-import 'package:my_expenses/db/services/category_service.dart';
 import 'package:my_expenses/blocs/category_bloc.dart';
 
 class AddCategory extends StatefulWidget {

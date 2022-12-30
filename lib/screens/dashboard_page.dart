@@ -2,9 +2,25 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:my_expenses/models/expense_model.dart';
 import 'package:my_expenses/screens/add_expense.dart';
+import 'package:built_collection/built_collection.dart';
+import 'package:my_expenses/db/services/expense_service.dart';
+import 'package:my_expenses/blocs/expense_bloc.dart';
 
-class DashboardPage extends StatelessWidget {
+class DashboardPage extends StatefulWidget {
   const DashboardPage({Key key}) : super(key: key);
+
+  @override
+  _DashboardPageState createState() => _DashboardPageState();
+}
+
+class _DashboardPageState extends State<DashboardPage> {
+  ExpenseBloc _expenseBloc;
+
+  @override
+  initState() {
+    super.initState();
+    _expenseBloc = ExpenseBloc(ExpenseService());
+  }
 
   String getStringDate(DateTime dt) {
     return "${dt.year}/${dt.month}/${dt.day}";
@@ -12,6 +28,10 @@ class DashboardPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return _getDashboard();
+  }
+
+  Widget _getDashboard() {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
           onPressed: () {
@@ -73,33 +93,54 @@ class DashboardPage extends StatelessWidget {
 
     var ls = [expense1, expense2, expense3];
 
-    return ListView.builder(
-      itemCount: ls.length,
-      itemBuilder: (context, index) {
-        var expense = ls[index];
-        return Container(
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(4.0),
-              border: new Border.all(
-                  width: 1.0, style: BorderStyle.solid, color: Colors.white)),
-          margin: EdgeInsets.all(12.0),
-          child: ListTile(
-            onTap: () {},
-            trailing: IconButton(
-              icon: Icon(Icons.delete),
-              color: Theme.of(context).primaryColorLight,
-              onPressed: () {},
-            ),
-            title: Text(
-              expense.title + " - Ugx." + expense.amount.toString(),
-              style: Theme.of(context).textTheme.bodyText1,
-            ),
-            subtitle: Text(
-              expense.notes,
-            ),
-          ),
-        );
-      },
+    return Column(
+      children: <Widget>[
+// Stream builder allows auto update of UI i.e. when items in db list are deleted
+//We do not have to update the UI programmatically!
+        StreamBuilder(
+          stream: _expenseBloc.expenseListStream,
+          builder: (_, AsyncSnapshot<BuiltList<ExpenseModel>> expenseListSnap) {
+            if (!expenseListSnap.hasData) {
+              return const CircularProgressIndicator();
+            }
+
+            var lsCategories = expenseListSnap.data;
+
+            return Expanded(
+              child: ListView.builder(
+                itemCount: lsCategories.length,
+                itemBuilder: (BuildContext ctxt, int index) {
+                  var expense = lsCategories[index];
+                  return Container(
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(4.0),
+                        border: Border.all(
+                            width: 1.0,
+                            style: BorderStyle.solid,
+                            color: Colors.white)),
+                    margin: const EdgeInsets.all(12.0),
+                    child: ListTile(
+                      onTap: () {},
+                      trailing: IconButton(
+                        icon: const Icon(Icons.delete),
+                        color: Theme.of(context).primaryColorLight,
+                        onPressed: () => _expenseBloc.deleteExpense(expense.id),
+                      ),
+                      title: Text(
+                        expense.title + " - Ugx." + expense.amount.toString(),
+                        style: Theme.of(context).textTheme.bodyText1,
+                      ),
+                      subtitle: Text(
+                        expense.notes,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            );
+          },
+        )
+      ],
     );
   }
 }
