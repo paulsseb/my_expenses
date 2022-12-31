@@ -22,7 +22,7 @@ class _AddCategoryState extends State<AddCategory> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Add New Category"),
+        title: const Text("Add New Category"),
       ),
       body: Container(
           padding: EdgeInsets.all(12.0),

@@ -35,8 +35,8 @@ class _DashboardPageState extends State<DashboardPage> {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
           onPressed: () {
-            Navigator.push(
-                context, MaterialPageRoute(builder: (context) => AddExpense()));
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => const AddExpense()));
           },
           child: const Icon(Icons.add)),
       body: Column(

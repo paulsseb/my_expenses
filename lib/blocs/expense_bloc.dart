@@ -17,22 +17,22 @@ class ExpenseBloc {
   Stream<ExpenseModel> get createExpenseStream =>
       _createExpenseController.stream;
 
-  updateCreateCategory(ExpenseModel cat) =>
-      _createExpenseController.sink.add(cat);
+  updateCreateExpense(ExpenseModel exp) =>
+      _createExpenseController.sink.add(exp);
 
   final _expenseListController = BehaviorSubject<BuiltList<ExpenseModel>>();
   Stream<BuiltList<ExpenseModel>> get expenseListStream =>
       _expenseListController.stream;
 
   getExpenses() {
-    expenseService.getAllExpenses().then((cats) {
-      _expenseListController.sink.add(cats);
+    expenseService.getAllExpenses().then((exp) {
+      _expenseListController.sink.add(exp);
     }).catchError((err) {
       _expenseListController.sink.addError(err);
     });
   }
 
-  Future<int> createNewCategory(ExpenseModel expense) async {
+  Future<int> createNewExpense(ExpenseModel expense) async {
     return await expenseService.createExpense(expense);
   }
 
