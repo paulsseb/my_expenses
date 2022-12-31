@@ -4,6 +4,9 @@ import 'package:my_expenses/models/expense_model.dart';
 import 'package:my_expenses/screens/add_expense.dart';
 import 'package:built_collection/built_collection.dart';
 import 'package:my_expenses/db/services/expense_service.dart';
+
+import 'package:my_expenses/db/services/category_service.dart';
+import 'package:my_expenses/blocs/category_bloc.dart';
 import 'package:my_expenses/blocs/expense_bloc.dart';
 
 class DashboardPage extends StatefulWidget {
@@ -15,11 +18,13 @@ class DashboardPage extends StatefulWidget {
 
 class _DashboardPageState extends State<DashboardPage> {
   ExpenseBloc _expenseBloc;
+  CategoryBloc _categoryBloc;
 
   @override
   initState() {
     super.initState();
     _expenseBloc = ExpenseBloc(ExpenseService());
+    _categoryBloc = CategoryBloc(CategoryService());
   }
 
   String getStringDate(DateTime dt) {
@@ -35,8 +40,13 @@ class _DashboardPageState extends State<DashboardPage> {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
           onPressed: () {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => const AddExpense()));
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => AddExpense(
+                          expenseBloc: _expenseBloc,
+                          categoryBloc: _categoryBloc,
+                        )));
           },
           child: const Icon(Icons.add)),
       body: Column(

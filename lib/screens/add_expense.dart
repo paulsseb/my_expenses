@@ -29,9 +29,8 @@ class _AddExpenseState extends State<AddExpense> {
   @override
   void initState() {
     super.initState();
-    // expenseBloc = ExpenseBloc(ExpenseService());
     widget.expenseBloc.updateCreateExpense(ExpenseModel());
-    categoryBloc = CategoryBloc(CategoryService());
+    widget.categoryBloc.updateCreateCategory(CategoryModel());
     _focus.addListener(_onFocusChange);
   }
 
@@ -65,7 +64,7 @@ class _AddExpenseState extends State<AddExpense> {
                   color: Colors.white,
                 ),
                 child: StreamBuilder(
-                  stream: categoryBloc.categoryListStream,
+                  stream: widget.categoryBloc.categoryListStream,
                   builder: (_, AsyncSnapshot<BuiltList<CategoryModel>> snap) {
                     if (!snap.hasData) {
                       return const Center(
