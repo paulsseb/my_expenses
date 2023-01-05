@@ -40,14 +40,9 @@ class ExpenseService implements ExpenseServiceBase {
     //insert to the table using the new id
     var resultId = await db.rawInsert(
         "INSERT Into Expense (id, categoryId, title, notes, amount)"
-        " VALUES (?,?,?,?)",
-        [
-          id,
-          expense.categoryId,
-          expense.title,
-          expense.title.toString(),
-          expense.amount
-        ]);
+        " VALUES (?,?,?,?,?)",
+        [id, expense.categoryId, expense.title, expense.notes, expense.amount]);
+    //expense.notes.toString(),
     return resultId;
   }
 

@@ -118,8 +118,8 @@ class _AddExpenseState extends State<AddExpense> {
                                   onChanged: (String text) {
                                     if (text == null || text.trim() == "")
                                       return;
-                                    var category = expenseSnap.data;
-                                    var upated = category.rebuild(
+                                    var amount = expenseSnap.data;
+                                    var upated = amount.rebuild(
                                         (b) => b..amount = double.parse(text));
                                     widget.expenseBloc
                                         .updateCreateExpense(upated);
@@ -130,9 +130,9 @@ class _AddExpenseState extends State<AddExpense> {
                                   onChanged: (String text) {
                                     if (text == null || text.trim() == "")
                                       return;
-                                    var category = expenseSnap.data;
-                                    var upated = category
-                                        .rebuild((b) => b..title = text);
+                                    var title = expenseSnap.data;
+                                    var upated =
+                                        title.rebuild((b) => b..title = text);
                                     widget.expenseBloc
                                         .updateCreateExpense(upated);
                                   }),
@@ -143,9 +143,9 @@ class _AddExpenseState extends State<AddExpense> {
                                   onChanged: (String text) {
                                     if (text == null || text.trim() == "")
                                       return;
-                                    var expense = expenseSnap.data;
+                                    var notes = expenseSnap.data;
                                     var upated =
-                                        expense.rebuild((b) => b..notes = text);
+                                        notes.rebuild((b) => b..notes = text);
                                     widget.expenseBloc
                                         .updateCreateExpense(upated);
                                   }),
@@ -154,6 +154,12 @@ class _AddExpenseState extends State<AddExpense> {
                                 onPressed: expenseSnap.data.title == null
                                     ? null
                                     : () async {
+                                        var expnseCat = expenseSnap.data;
+                                        var upated = expnseCat.rebuild((b) =>
+                                            b..categoryId = selectedCategoryId);
+                                        await widget.expenseBloc
+                                            .updateCreateExpense(upated);
+
                                         var createdId = await widget.expenseBloc
                                             .createNewExpense(expenseSnap.data);
                                         if (createdId > 0) {
