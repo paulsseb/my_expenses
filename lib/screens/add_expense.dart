@@ -123,6 +123,14 @@ class _AddExpenseState extends State<AddExpense> {
                                         // This is called when the user changes the date.
                                         onDateTimeChanged: (DateTime newDate) {
                                           setState(() => date = newDate);
+                                          if (newDate == null) return;
+                                          var notes = expenseSnap.data;
+                                          // wip .. date attrib to be added
+                                          var upated = notes.rebuild((b) => b
+                                            ..notes =
+                                                '${date.month}-${date.day}-${date.year}');
+                                          widget.expenseBloc
+                                              .updateCreateExpense(upated);
                                         },
                                       ),
                                     ),
@@ -138,19 +146,6 @@ class _AddExpenseState extends State<AddExpense> {
                                   ),
                                 ],
                               ),
-                              TextField(
-                                  decoration: const InputDecoration(
-                                      labelText: "Date of expense"),
-                                  maxLines: 2,
-                                  onChanged: (String text) {
-                                    if (text == null || text.trim() == "")
-                                      return;
-                                    var notes = expenseSnap.data;
-                                    var upated =
-                                        notes.rebuild((b) => b..notes = text);
-                                    widget.expenseBloc
-                                        .updateCreateExpense(upated);
-                                  }),
                               TextField(
                                   controller: _amountTextController,
                                   focusNode: _focus,
@@ -273,7 +268,7 @@ class _AddExpenseState extends State<AddExpense> {
     showCupertinoModalPopup<void>(
         context: context,
         builder: (BuildContext context) => Container(
-              height: 216,
+              height: 500,
               padding: const EdgeInsets.only(top: 6.0),
               // The Bottom margin is provided to align the popup above the system
               // navigation bar.
