@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
+import 'package:intl/intl.dart';
 import 'package:my_expenses/models/expense_model.dart';
 import 'package:my_expenses/screens/add_expense.dart';
 import 'package:built_collection/built_collection.dart';
@@ -19,6 +21,40 @@ class DashboardPage extends StatefulWidget {
 class _DashboardPageState extends State<DashboardPage> {
   ExpenseBloc _expenseBloc;
   CategoryBloc _categoryBloc;
+  String _selectedDate = '';
+  String _dateCount = '';
+  String _range = '';
+  String _rangeCount = '';
+
+  /// The method for [DateRangePickerSelectionChanged] callback, which will be
+  /// called whenever a selection changed on the date picker widget.
+  void _onSelectionChanged(DateRangePickerSelectionChangedArgs args) {
+    /// The argument value will return the changed date as [DateTime] when the
+    /// widget [SfDateRangeSelectionMode] set as single.
+    ///
+    /// The argument value will return the changed dates as [List<DateTime>]
+    /// when the widget [SfDateRangeSelectionMode] set as multiple.
+    ///
+    /// The argument value will return the changed range as [PickerDateRange]
+    /// when the widget [SfDateRangeSelectionMode] set as range.
+    ///
+    /// The argument value will return the changed ranges as
+    /// [List<PickerDateRange] when the widget [SfDateRangeSelectionMode] set as
+    /// multi range.
+    setState(() {
+      if (args.value is PickerDateRange) {
+        _range = '${DateFormat('dd/MM/yyyy').format(args.value.startDate)} -'
+            // ignore: lines_longer_than_80_chars
+            ' ${DateFormat('dd/MM/yyyy').format(args.value.endDate ?? args.value.startDate)}';
+      } else if (args.value is DateTime) {
+        _selectedDate = args.value.toString();
+      } else if (args.value is List<DateTime>) {
+        _dateCount = args.value.length.toString();
+      } else {
+        _rangeCount = args.value.length.toString();
+      }
+    });
+  }
 
   @override
   initState() {
@@ -63,9 +99,12 @@ class _DashboardPageState extends State<DashboardPage> {
                   ),
                   Container(
                     margin: const EdgeInsets.symmetric(horizontal: 12.0),
-                    child: Text(
-                      getStringDate(DateTime.now()),
-                      style: Theme.of(context).textTheme.bodyText1,
+                    child: SfDateRangePicker(
+                      onSelectionChanged: _onSelectionChanged,
+                      selectionMode: DateRangePickerSelectionMode.range,
+                      initialSelectedRange: PickerDateRange(
+                          DateTime.now().subtract(const Duration(days: 4)),
+                          DateTime.now().add(const Duration(days: 3))),
                     ),
                   ),
                   IconButton(

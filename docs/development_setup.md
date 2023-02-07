@@ -7,6 +7,7 @@ https://docs.flutter.dev/get-started/install
 ```
 > flutter create my_expenses
 > cd my_expenses
+> flutter pub get 
 > flutter run
 ```
 ##### 3. After the basic, this project is into models,business logic(Block files), screens and an db (sql lite) 
