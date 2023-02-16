@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:intl/intl.dart';
 import 'package:my_expenses/models/expense_model.dart';
@@ -21,7 +22,7 @@ class DashboardPage extends StatefulWidget {
 class _DashboardPageState extends State<DashboardPage> {
   ExpenseBloc _expenseBloc;
   CategoryBloc _categoryBloc;
-  String _selectedDate = '';
+  String _selectedDate;
   String _dateCount = '';
   String _range = '';
   String _rangeCount = '';
@@ -98,13 +99,35 @@ class _DashboardPageState extends State<DashboardPage> {
                     icon: const Icon(Icons.arrow_back),
                   ),
                   Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 12.0),
-                    child: SfDateRangePicker(
-                      onSelectionChanged: _onSelectionChanged,
-                      selectionMode: DateRangePickerSelectionMode.range,
-                      initialSelectedRange: PickerDateRange(
-                          DateTime.now().subtract(const Duration(days: 4)),
-                          DateTime.now().add(const Duration(days: 3))),
+                    margin: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: MaterialButton(
+                      child: Container(
+                        child: _selectedDate == null
+                            ? Text('Select a date')
+                            : Text(_selectedDate),
+                      ),
+                      onPressed: () {
+                        showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                  title: Text('Date picker'),
+                                  content: Container(
+                                    height: 350,
+                                    child: Column(
+                                      children: <Widget>[
+                                        getDateRangePicker(),
+                                        MaterialButton(
+                                          child: Text("OK"),
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          },
+                                        )
+                                      ],
+                                    ),
+                                  ));
+                            });
+                      },
                     ),
                   ),
                   IconButton(
@@ -119,6 +142,25 @@ class _DashboardPageState extends State<DashboardPage> {
         ],
       ),
     );
+  }
+
+  Widget getDateRangePicker() {
+    return Container(
+        height: 250,
+        child: Card(
+            child: SfDateRangePicker(
+          view: DateRangePickerView.month,
+          selectionMode: DateRangePickerSelectionMode.single,
+          onSelectionChanged: selectionChanged,
+        )));
+  }
+
+  void selectionChanged(DateRangePickerSelectionChangedArgs args) {
+    _selectedDate = DateFormat('dd MMMM, yyyy').format(args.value);
+
+    SchedulerBinding.instance.addPostFrameCallback((duration) {
+      setState(() {});
+    });
   }
 
   Widget _getExpenses() {
