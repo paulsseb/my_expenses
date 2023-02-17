@@ -146,7 +146,8 @@ class _DashboardPageState extends State<DashboardPage> {
 
   Widget getDateRangePicker() {
     return Container(
-        height: 250,
+        width: 350.0,
+        height: 300.0,
         child: Card(
             child: SfDateRangePicker(
           view: DateRangePickerView.month,
