@@ -1,12 +1,14 @@
 import 'package:built_collection/built_collection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 
-import 'package:my_expenses/db/services/expense_service.dart';
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
+import 'package:intl/intl.dart';
+
 import 'package:my_expenses/blocs/expense_bloc.dart';
 import 'package:my_expenses/models/expense_model.dart';
 
-import 'package:my_expenses/db/services/category_service.dart';
 import 'package:my_expenses/models/category_model.dart';
 import 'package:my_expenses/blocs/category_bloc.dart';
 
@@ -42,7 +44,7 @@ class _AddExpenseState extends State<AddExpense> {
   }
 
   int selectedCategoryId = 0;
-  DateTime date = DateTime.now();
+  DateTime _selectedDate = DateTime.now();
 
   @override
   Widget build(BuildContext context) {
@@ -113,36 +115,36 @@ class _AddExpenseState extends State<AddExpense> {
                               _DatePickerItem(
                                 children: <Widget>[
                                   const Text('Date'),
-                                  CupertinoButton(
-                                    // Display a CupertinoDatePicker in date picker mode.
-                                    onPressed: () => _showDialog(
-                                      CupertinoDatePicker(
-                                        initialDateTime: date,
-                                        mode: CupertinoDatePickerMode.date,
-                                        use24hFormat: true,
-                                        // This is called when the user changes the date.
-                                        onDateTimeChanged: (DateTime newDate) {
-                                          setState(() => date = newDate);
-                                          if (newDate == null) return;
-                                          var notes = expenseSnap.data;
-                                          // wip .. date attrib to be added
-                                          var upated = notes.rebuild((b) => b
-                                            ..notes =
-                                                '${date.month}-${date.day}-${date.year}');
-                                          widget.expenseBloc
-                                              .updateCreateExpense(upated);
-                                        },
-                                      ),
+                                  MaterialButton(
+                                    child: Container(
+                                      child: _selectedDate == null
+                                          ? Text('Select a date')
+                                          : Text(
+                                              '${_selectedDate.month}-${_selectedDate.day}-${_selectedDate.year}'),
                                     ),
-                                    // In this example, the date is formatted manually. You can
-                                    // use the intl package to format the value based on the
-                                    // user's locale settings.
-                                    child: Text(
-                                      '${date.month}-${date.day}-${date.year}',
-                                      style: const TextStyle(
-                                        fontSize: 22.0,
-                                      ),
-                                    ),
+                                    onPressed: () {
+                                      showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return AlertDialog(
+                                                title: Text('Date picker'),
+                                                content: Container(
+                                                  height: 350,
+                                                  child: Column(
+                                                    children: <Widget>[
+                                                      getDateRangePicker(),
+                                                      MaterialButton(
+                                                        child: Text("OK"),
+                                                        onPressed: () {
+                                                          Navigator.pop(
+                                                              context);
+                                                        },
+                                                      )
+                                                    ],
+                                                  ),
+                                                ));
+                                          });
+                                    },
                                   ),
                                 ],
                               ),
@@ -162,6 +164,14 @@ class _AddExpenseState extends State<AddExpense> {
                                         (b) => b..amount = double.parse(text));
                                     widget.expenseBloc
                                         .updateCreateExpense(upated);
+
+                                    var notes = expenseSnap.data;
+                                    // wip .. date attrib to be added
+                                    var upated2 = notes.rebuild((b) => b
+                                      ..notes =
+                                          '${_selectedDate.month}-${_selectedDate.day}-${_selectedDate.year}');
+                                    widget.expenseBloc
+                                        .updateCreateExpense(upated2);
                                   }),
                               TextField(
                                   decoration:
@@ -219,6 +229,26 @@ class _AddExpenseState extends State<AddExpense> {
             ],
           ),
         ));
+  }
+
+  Widget getDateRangePicker() {
+    return Container(
+        width: 350.0,
+        height: 300.0,
+        child: Card(
+            child: SfDateRangePicker(
+          view: DateRangePickerView.month,
+          selectionMode: DateRangePickerSelectionMode.single,
+          onSelectionChanged: selectionChanged,
+        )));
+  }
+
+  void selectionChanged(DateRangePickerSelectionChangedArgs args) {
+    setState(() => _selectedDate = args.value);
+    if (args.value == null) return;
+    SchedulerBinding.instance.addPostFrameCallback((duration) {
+      setState(() {});
+    });
   }
 
   Widget _shortcutKeyboard() {

@@ -23,39 +23,6 @@ class _DashboardPageState extends State<DashboardPage> {
   ExpenseBloc _expenseBloc;
   CategoryBloc _categoryBloc;
   String _selectedDate;
-  String _dateCount = '';
-  String _range = '';
-  String _rangeCount = '';
-
-  /// The method for [DateRangePickerSelectionChanged] callback, which will be
-  /// called whenever a selection changed on the date picker widget.
-  void _onSelectionChanged(DateRangePickerSelectionChangedArgs args) {
-    /// The argument value will return the changed date as [DateTime] when the
-    /// widget [SfDateRangeSelectionMode] set as single.
-    ///
-    /// The argument value will return the changed dates as [List<DateTime>]
-    /// when the widget [SfDateRangeSelectionMode] set as multiple.
-    ///
-    /// The argument value will return the changed range as [PickerDateRange]
-    /// when the widget [SfDateRangeSelectionMode] set as range.
-    ///
-    /// The argument value will return the changed ranges as
-    /// [List<PickerDateRange] when the widget [SfDateRangeSelectionMode] set as
-    /// multi range.
-    setState(() {
-      if (args.value is PickerDateRange) {
-        _range = '${DateFormat('dd/MM/yyyy').format(args.value.startDate)} -'
-            // ignore: lines_longer_than_80_chars
-            ' ${DateFormat('dd/MM/yyyy').format(args.value.endDate ?? args.value.startDate)}';
-      } else if (args.value is DateTime) {
-        _selectedDate = args.value.toString();
-      } else if (args.value is List<DateTime>) {
-        _dateCount = args.value.length.toString();
-      } else {
-        _rangeCount = args.value.length.toString();
-      }
-    });
-  }
 
   @override
   initState() {
@@ -165,26 +132,6 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   Widget _getExpenses() {
-    var expense1 = ExpenseModel().rebuild((b) => b
-      ..id = 1
-      ..title = "Coffee"
-      ..notes = "Coffee at peepalbot"
-      ..amount = 129.00);
-
-    var expense2 = ExpenseModel().rebuild((b) => b
-      ..id = 2
-      ..title = "Lunch"
-      ..notes = "Momos at dilli bazar"
-      ..amount = 150.00);
-
-    var expense3 = ExpenseModel().rebuild((b) => b
-      ..id = 3
-      ..title = "Pants"
-      ..notes = "Bought a pair of pants from Dbmg"
-      ..amount = 2500.00);
-
-    var ls = [expense1, expense2, expense3];
-
     return Column(
       children: <Widget>[
 // Stream builder allows auto update of UI i.e. when items in db list are deleted
