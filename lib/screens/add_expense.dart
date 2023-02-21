@@ -27,6 +27,7 @@ class _AddExpenseState extends State<AddExpense> {
   bool _showKeyboard = false;
   TextEditingController _amountTextController = TextEditingController();
   CategoryBloc categoryBloc;
+  AsyncSnapshot<ExpenseModel> expenseSnap;
   // ExpenseBloc expenseBloc;
 
   @override
@@ -106,7 +107,8 @@ class _AddExpenseState extends State<AddExpense> {
                       child: StreamBuilder(
                         stream: widget.expenseBloc.createExpenseStream,
                         builder:
-                            (ctxt, AsyncSnapshot<ExpenseModel> expenseSnap) {
+                            (ctxt, AsyncSnapshot<ExpenseModel> expenseSnap2) {
+                          expenseSnap = expenseSnap2;
                           if (!expenseSnap.hasData) {
                             return const CircularProgressIndicator();
                           }
@@ -164,14 +166,6 @@ class _AddExpenseState extends State<AddExpense> {
                                         (b) => b..amount = double.parse(text));
                                     widget.expenseBloc
                                         .updateCreateExpense(upated);
-
-                                    var notes = expenseSnap.data;
-                                    // wip .. date attrib to be added
-                                    var upated2 = notes.rebuild((b) => b
-                                      ..notes =
-                                          '${_selectedDate.month}-${_selectedDate.day}-${_selectedDate.year}');
-                                    widget.expenseBloc
-                                        .updateCreateExpense(upated2);
                                   }),
                               TextField(
                                   decoration:
@@ -246,6 +240,13 @@ class _AddExpenseState extends State<AddExpense> {
   void selectionChanged(DateRangePickerSelectionChangedArgs args) {
     setState(() => _selectedDate = args.value);
     if (args.value == null) return;
+    var notes = expenseSnap.data;
+    // wip .. date attrib to be added
+    var upated = notes.rebuild((b) => b
+      ..notes =
+          '${_selectedDate.month}-${_selectedDate.day}-${_selectedDate.year}');
+    widget.expenseBloc.updateCreateExpense(upated);
+
     SchedulerBinding.instance.addPostFrameCallback((duration) {
       setState(() {});
     });
