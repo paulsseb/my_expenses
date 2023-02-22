@@ -37,7 +37,8 @@ class CategoryService implements CategoryServiceBase {
     var db = await OfflineDbProvider.provider.database;
     //get the biggest id in the table
     var table = await db.rawQuery("SELECT MAX(id) as id FROM Category");
-    int id = table.first["id"] == null ? 1 : table.first["id"] + 1;
+    int firstid = table.first["id"];
+    int id = table.first["id"] == null ? 1 : firstid + 1;
     //insert to the table using the new id
     var resultId = await db.rawInsert(
         "INSERT Into Category (id, title, desc, iconCodePoint)"
