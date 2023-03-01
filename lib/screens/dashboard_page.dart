@@ -1,5 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
+import 'package:intl/intl.dart';
 import 'package:my_expenses/models/expense_model.dart';
 import 'package:my_expenses/screens/add_expense.dart';
 import 'package:built_collection/built_collection.dart';
@@ -19,6 +22,7 @@ class DashboardPage extends StatefulWidget {
 class _DashboardPageState extends State<DashboardPage> {
   ExpenseBloc _expenseBloc;
   CategoryBloc _categoryBloc;
+  String _selectedDate;
 
   @override
   initState() {
@@ -62,10 +66,35 @@ class _DashboardPageState extends State<DashboardPage> {
                     icon: const Icon(Icons.arrow_back),
                   ),
                   Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 12.0),
-                    child: Text(
-                      getStringDate(DateTime.now()),
-                      style: Theme.of(context).textTheme.bodyText1,
+                    margin: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: MaterialButton(
+                      child: Container(
+                        child: _selectedDate == null
+                            ? Text('Select a date')
+                            : Text(_selectedDate),
+                      ),
+                      onPressed: () {
+                        showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                  title: Text('Date picker'),
+                                  content: Container(
+                                    height: 350,
+                                    child: Column(
+                                      children: <Widget>[
+                                        getDateRangePicker(),
+                                        MaterialButton(
+                                          child: Text("OK"),
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          },
+                                        )
+                                      ],
+                                    ),
+                                  ));
+                            });
+                      },
                     ),
                   ),
                   IconButton(
@@ -82,27 +111,27 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
+  Widget getDateRangePicker() {
+    return Container(
+        width: 350.0,
+        height: 300.0,
+        child: Card(
+            child: SfDateRangePicker(
+          view: DateRangePickerView.month,
+          selectionMode: DateRangePickerSelectionMode.single,
+          onSelectionChanged: selectionChanged,
+        )));
+  }
+
+  void selectionChanged(DateRangePickerSelectionChangedArgs args) {
+    _selectedDate = DateFormat('dd MMMM, yyyy').format(args.value);
+
+    SchedulerBinding.instance.addPostFrameCallback((duration) {
+      setState(() {});
+    });
+  }
+
   Widget _getExpenses() {
-    var expense1 = ExpenseModel().rebuild((b) => b
-      ..id = 1
-      ..title = "Coffee"
-      ..notes = "Coffee at peepalbot"
-      ..amount = 129.00);
-
-    var expense2 = ExpenseModel().rebuild((b) => b
-      ..id = 2
-      ..title = "Lunch"
-      ..notes = "Momos at dilli bazar"
-      ..amount = 150.00);
-
-    var expense3 = ExpenseModel().rebuild((b) => b
-      ..id = 3
-      ..title = "Pants"
-      ..notes = "Bought a pair of pants from Dbmg"
-      ..amount = 2500.00);
-
-    var ls = [expense1, expense2, expense3];
-
     return Column(
       children: <Widget>[
 // Stream builder allows auto update of UI i.e. when items in db list are deleted
