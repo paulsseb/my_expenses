@@ -27,6 +27,7 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   initState() {
     super.initState();
+    _selectedDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
     _expenseBloc = ExpenseBloc(ExpenseService());
     _categoryBloc = CategoryBloc(CategoryService());
   }
@@ -124,7 +125,8 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   void selectionChanged(DateRangePickerSelectionChangedArgs args) {
-    _selectedDate = DateFormat('dd MMMM, yyyy').format(args.value);
+    _selectedDate = DateFormat('yyyy-MM-dd').format(args.value);
+    _expenseBloc.getExpensesByDate(_selectedDate);
 
     SchedulerBinding.instance.addPostFrameCallback((duration) {
       setState(() {});
@@ -137,7 +139,7 @@ class _DashboardPageState extends State<DashboardPage> {
 // Stream builder allows auto update of UI i.e. when items in db list are deleted
 //We do not have to update the UI programmatically!
         StreamBuilder(
-          stream: _expenseBloc.expenseListStream,
+          stream: _expenseBloc.expenseListSelectDateStream,
           builder: (_, AsyncSnapshot<BuiltList<ExpenseModel>> expenseListSnap) {
             if (!expenseListSnap.hasData) {
               return const CircularProgressIndicator();
@@ -166,8 +168,8 @@ class _DashboardPageState extends State<DashboardPage> {
                         onPressed: () => _expenseBloc.deleteExpense(expense.id),
                       ),
                       title: Text(
-                        expense.title + " - Ugx." + expense.amount.toString(),
-                        style: Theme.of(context).textTheme.bodyText1,
+                        "${expense.title} - Ugx.${expense.amount}",
+                        style: Theme.of(context).textTheme.bodyLarge,
                       ),
                       subtitle: Text(
                         expense.notes,

@@ -240,11 +240,9 @@ class _AddExpenseState extends State<AddExpense> {
   void selectionChanged(DateRangePickerSelectionChangedArgs args) {
     setState(() => _selectedDate = args.value);
     if (args.value == null) return;
-    var notes = expenseSnap.data;
-    // wip .. date attrib to be added
-    var upated = notes.rebuild((b) => b
-      ..notes =
-          '${_selectedDate.month}-${_selectedDate.day}-${_selectedDate.year}');
+    var date = expenseSnap.data;
+    var upated = date.rebuild(
+        (b) => b..date = DateFormat('yyyy-MM-dd').format(_selectedDate));
     widget.expenseBloc.updateCreateExpense(upated);
 
     SchedulerBinding.instance.addPostFrameCallback((duration) {

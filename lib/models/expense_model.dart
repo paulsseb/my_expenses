@@ -19,4 +19,6 @@ abstract class ExpenseModel
   String get notes;
   @nullable
   double get amount;
+  @nullable
+  String get date;
 }

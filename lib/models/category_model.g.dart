@@ -19,29 +19,32 @@ class _$CategoryModelSerializer implements StructuredSerializer<CategoryModel> {
   Iterable<Object> serialize(Serializers serializers, CategoryModel object,
       {FullType specifiedType = FullType.unspecified}) {
     final result = <Object>[];
-    if (object.id != null) {
+    Object value;
+    value = object.id;
+    if (value != null) {
       result
         ..add('id')
-        ..add(serializers.serialize(object.id,
-            specifiedType: const FullType(int)));
+        ..add(serializers.serialize(value, specifiedType: const FullType(int)));
     }
-    if (object.title != null) {
+    value = object.title;
+    if (value != null) {
       result
         ..add('title')
-        ..add(serializers.serialize(object.title,
+        ..add(serializers.serialize(value,
             specifiedType: const FullType(String)));
     }
-    if (object.desc != null) {
+    value = object.desc;
+    if (value != null) {
       result
         ..add('desc')
-        ..add(serializers.serialize(object.desc,
+        ..add(serializers.serialize(value,
             specifiedType: const FullType(String)));
     }
-    if (object.iconCodePoint != null) {
+    value = object.iconCodePoint;
+    if (value != null) {
       result
         ..add('iconCodePoint')
-        ..add(serializers.serialize(object.iconCodePoint,
-            specifiedType: const FullType(int)));
+        ..add(serializers.serialize(value, specifiedType: const FullType(int)));
     }
     return result;
   }
@@ -56,7 +59,7 @@ class _$CategoryModelSerializer implements StructuredSerializer<CategoryModel> {
     while (iterator.moveNext()) {
       final key = iterator.current as String;
       iterator.moveNext();
-      final dynamic value = iterator.current;
+      final Object value = iterator.current;
       switch (key) {
         case 'id':
           result.id = serializers.deserialize(value,
@@ -92,7 +95,7 @@ class _$CategoryModel extends CategoryModel {
   final int iconCodePoint;
 
   factory _$CategoryModel([void Function(CategoryModelBuilder) updates]) =>
-      (new CategoryModelBuilder()..update(updates)).build();
+      (new CategoryModelBuilder()..update(updates))._build();
 
   _$CategoryModel._({this.id, this.title, this.desc, this.iconCodePoint})
       : super._();
@@ -116,13 +119,18 @@ class _$CategoryModel extends CategoryModel {
 
   @override
   int get hashCode {
-    return $jf($jc($jc($jc($jc(0, id.hashCode), title.hashCode), desc.hashCode),
-        iconCodePoint.hashCode));
+    var _$hash = 0;
+    _$hash = $jc(_$hash, id.hashCode);
+    _$hash = $jc(_$hash, title.hashCode);
+    _$hash = $jc(_$hash, desc.hashCode);
+    _$hash = $jc(_$hash, iconCodePoint.hashCode);
+    _$hash = $jf(_$hash);
+    return _$hash;
   }
 
   @override
   String toString() {
-    return (newBuiltValueToStringHelper('CategoryModel')
+    return (newBuiltValueToStringHelper(r'CategoryModel')
           ..add('id', id)
           ..add('title', title)
           ..add('desc', desc)
@@ -154,11 +162,12 @@ class CategoryModelBuilder
   CategoryModelBuilder();
 
   CategoryModelBuilder get _$this {
-    if (_$v != null) {
-      _id = _$v.id;
-      _title = _$v.title;
-      _desc = _$v.desc;
-      _iconCodePoint = _$v.iconCodePoint;
+    final $v = _$v;
+    if ($v != null) {
+      _id = $v.id;
+      _title = $v.title;
+      _desc = $v.desc;
+      _iconCodePoint = $v.iconCodePoint;
       _$v = null;
     }
     return this;
@@ -166,9 +175,7 @@ class CategoryModelBuilder
 
   @override
   void replace(CategoryModel other) {
-    if (other == null) {
-      throw new ArgumentError.notNull('other');
-    }
+    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$CategoryModel;
   }
 
@@ -178,7 +185,9 @@ class CategoryModelBuilder
   }
 
   @override
-  _$CategoryModel build() {
+  CategoryModel build() => _build();
+
+  _$CategoryModel _build() {
     final _$result = _$v ??
         new _$CategoryModel._(
             id: id, title: title, desc: desc, iconCodePoint: iconCodePoint);
@@ -187,4 +196,4 @@ class CategoryModelBuilder
   }
 }
 
-// ignore_for_file: always_put_control_body_on_new_line,always_specify_types,annotate_overrides,avoid_annotating_with_dynamic,avoid_as,avoid_catches_without_on_clauses,avoid_returning_this,lines_longer_than_80_chars,omit_local_variable_types,prefer_expression_function_bodies,sort_constructors_first,test_types_in_equals,unnecessary_const,unnecessary_new
+// ignore_for_file: deprecated_member_use_from_same_package,type=lint
