@@ -1,4 +1,5 @@
 import 'package:my_expenses/screens/category.dart';
+import 'package:my_expenses/screens/report.dart';
 import 'package:my_expenses/screens/dashboard_page.dart';
 import 'package:flutter/material.dart';
 
@@ -40,11 +41,7 @@ class _HomePageState extends State<HomePage>
           children: <Widget>[
             const DashboardPage(),
             CategoryPage(),
-            Center(
-                child: Text(
-              "Reports",
-              style: Theme.of(context).textTheme.bodyText1,
-            ))
+            ReportPage(),
           ],
         ));
   }

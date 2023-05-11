@@ -16,7 +16,12 @@ built value type model has many benefits over reference type such as immutabilit
 
 ```> flutter packages pub run build_runner build```
 
-##### 4. References
+##### 4. Generate apk release 
+NB: This command allows generation of apk release apk with publish to playstore for now..
+```> flutter build apk --split-per-abi --no-tree-shake-icons```
+
+##### 5. References
 Flutter expense App tutorial
 1. https://stacksecrets.com/flutter/flutter-tutorial-building-an-expense-manager-app-2    (Built value and runner usage)
 2. https://stacksecrets.com/flutter/flutter-tutorial-building-an-expense-manager-app-in-flutter-1
+

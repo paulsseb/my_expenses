@@ -31,9 +31,8 @@ class ExpenseService implements ExpenseServiceBase {
   @override
   Future<BuiltList<ExpenseModel>> getExpensesByDate(String selectedDate) async {
     var db = await OfflineDbProvider.provider.database;
-    //var res = await db.query("Expense");
-    var res = await db
-        .rawQuery('SELECT * FROM Expense WHERE date = ?', [selectedDate]);
+    var res = await db.query("Expense");
+    //var res = await db.rawQuery('SELECT * FROM Expense WHERE date = ?', [selectedDate]);
     if (res.isEmpty) return BuiltList();
 
     var list = BuiltList<ExpenseModel>();

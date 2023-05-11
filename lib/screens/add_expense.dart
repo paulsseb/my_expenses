@@ -119,10 +119,7 @@ class _AddExpenseState extends State<AddExpense> {
                                   const Text('Date'),
                                   MaterialButton(
                                     child: Container(
-                                      child: _selectedDate == null
-                                          ? Text('Select a date')
-                                          : Text(
-                                              '${_selectedDate.month}-${_selectedDate.day}-${_selectedDate.year}'),
+                                      child: Text('Select a date'),
                                     ),
                                     onPressed: () {
                                       showDialog(
@@ -239,7 +236,9 @@ class _AddExpenseState extends State<AddExpense> {
 
   void selectionChanged(DateRangePickerSelectionChangedArgs args) {
     setState(() => _selectedDate = args.value);
-    if (args.value == null) return;
+    if (args.value == null) {
+      _selectedDate = DateTime.now();
+    }
     var date = expenseSnap.data;
     var upated = date.rebuild(
         (b) => b..date = DateFormat('yyyy-MM-dd').format(_selectedDate));

@@ -42,6 +42,7 @@ dependencies:
   built_collection: ^5.1.1
   rxdart: ^0.27.7
   syncfusion_flutter_datepicker: ^20.3.61
+  syncfusion_flutter_charts: ^20.4.54
 
 dependency_overrides:
   gql: 0.14.0

@@ -172,7 +172,7 @@ class _DashboardPageState extends State<DashboardPage> {
                         style: Theme.of(context).textTheme.bodyLarge,
                       ),
                       subtitle: Text(
-                        expense.notes,
+                        "${expense.notes} - on ${expense.date}",
                       ),
                     ),
                   );
