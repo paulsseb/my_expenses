@@ -1,9 +1,9 @@
+import 'package:flutter/material.dart';
 import 'package:my_expenses/screens/category.dart';
 import 'package:my_expenses/screens/dashboard_page.dart';
-import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key key}) : super(key: key);
+  const HomePage({super.key});
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -11,7 +11,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
-  TabController _tabController;
+  late TabController _tabController; // Use 'late' to avoid null safety issues.
 
   final List<String> _tabs = ["Home", "Category", "Report"];
 
@@ -22,30 +22,38 @@ class _HomePageState extends State<HomePage>
   }
 
   @override
+  void dispose() {
+    _tabController.dispose(); // Dispose of the controller to avoid memory leaks.
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text("Expense Manager"),
-          bottom: TabBar(
-            controller: _tabController,
-            tabs: const [
-              Tab(icon: Icon(Icons.home)),
-              Tab(icon: Icon(Icons.category)),
-              Tab(icon: Icon(Icons.report)),
-            ],
-          ),
-        ),
-        body: TabBarView(
+      appBar: AppBar(
+        title: const Text("Expense Manager"),
+        bottom: TabBar(
           controller: _tabController,
-          children: <Widget>[
-            const DashboardPage(),
-            CategoryPage(),
-            Center(
-                child: Text(
-              "Reports",
-              style: Theme.of(context).textTheme.bodyText1,
-            ))
+          tabs: const [
+            Tab(icon: Icon(Icons.home)),
+            Tab(icon: Icon(Icons.category)),
+            Tab(icon: Icon(Icons.report)),
           ],
-        ));
+        ),
+      ),
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          DashboardPage(), // Removed 'const' if DashboardPage isn't a constant widget.
+          CategoryPage(), 
+          Center(
+            child: Text(
+              "Reports",
+              style: Theme.of(context).textTheme.headlineLarge,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

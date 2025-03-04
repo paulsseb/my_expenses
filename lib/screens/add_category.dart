@@ -5,7 +5,7 @@ import 'package:my_expenses/blocs/category_bloc.dart';
 class AddCategory extends StatefulWidget {
   final CategoryBloc categoryBloc;
 
-  const AddCategory({Key key, this.categoryBloc}) : super(key: key);
+  const AddCategory ({super.key, this.categoryBloc}) ;
 
   @override
   _AddCategoryState createState() => _AddCategoryState();
@@ -35,7 +35,7 @@ class _AddCategoryState extends State<AddCategory> {
                   TextField(
                       decoration: InputDecoration(labelText: "Title"),
                       onChanged: (String text) {
-                        if (text == null || text.trim() == "") return;
+                        if (text.trim() == "") return;
                         var category = catgorySnap.data;
                         var upated = category.rebuild((b) => b..title = text);
                         widget.categoryBloc.updateCreateCategory(upated);
@@ -44,7 +44,7 @@ class _AddCategoryState extends State<AddCategory> {
                       decoration: InputDecoration(labelText: "Description"),
                       maxLines: 2,
                       onChanged: (String text) {
-                        if (text == null || text.trim() == "") return;
+                        if (text.trim() == "") return;
                         var category = catgorySnap.data;
                         var upated = category.rebuild((b) => b..desc = text);
                         widget.categoryBloc.updateCreateCategory(upated);

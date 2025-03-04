@@ -159,7 +159,7 @@ class _AddExpenseState extends State<AddExpense> {
                                   ),
                                   maxLines: 1,
                                   onChanged: (String text) {
-                                    if (text == null || text.trim() == "")
+                                    if (text.trim() == "")
                                       return;
                                     var amount = expenseSnap.data;
                                     var upated = amount.rebuild(
@@ -171,7 +171,7 @@ class _AddExpenseState extends State<AddExpense> {
                                   decoration:
                                       InputDecoration(labelText: "Title"),
                                   onChanged: (String text) {
-                                    if (text == null || text.trim() == "")
+                                    if (text.trim() == "")
                                       return;
                                     var title = expenseSnap.data;
                                     var upated =
@@ -184,7 +184,7 @@ class _AddExpenseState extends State<AddExpense> {
                                       InputDecoration(labelText: "Notes"),
                                   maxLines: 2,
                                   onChanged: (String text) {
-                                    if (text == null || text.trim() == "")
+                                    if (text.trim() == "")
                                       return;
                                     var notes = expenseSnap.data;
                                     var upated =
