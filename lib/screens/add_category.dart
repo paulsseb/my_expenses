@@ -5,7 +5,7 @@ import 'package:my_expenses/blocs/category_bloc.dart';
 class AddCategory extends StatefulWidget {
   final CategoryBloc categoryBloc;
 
-  const AddCategory ({super.key, this.categoryBloc}) ;
+  const AddCategory({super.key, required this.categoryBloc});
 
   @override
   _AddCategoryState createState() => _AddCategoryState();
@@ -19,68 +19,86 @@ class _AddCategoryState extends State<AddCategory> {
   }
 
   @override
+  void dispose() {
+    widget.categoryBloc.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Add New Category"),
       ),
-      body: Container(
-          padding: EdgeInsets.all(12.0),
-          child: StreamBuilder(
-            stream: widget.categoryBloc.createCategoryStream,
-            builder: (ctxt, AsyncSnapshot<CategoryModel> catgorySnap) {
-              if (!catgorySnap.hasData) return CircularProgressIndicator();
-              return Column(
-                children: <Widget>[
-                  TextField(
-                      decoration: InputDecoration(labelText: "Title"),
-                      onChanged: (String text) {
-                        if (text.trim() == "") return;
-                        var category = catgorySnap.data;
-                        var upated = category.rebuild((b) => b..title = text);
-                        widget.categoryBloc.updateCreateCategory(upated);
-                      }),
-                  TextField(
-                      decoration: InputDecoration(labelText: "Description"),
-                      maxLines: 2,
-                      onChanged: (String text) {
-                        if (text.trim() == "") return;
-                        var category = catgorySnap.data;
-                        var upated = category.rebuild((b) => b..desc = text);
-                        widget.categoryBloc.updateCreateCategory(upated);
-                      }),
-                  Container(
-                    child: Text("Pick An Icon:"),
-                    margin: EdgeInsets.all(12.0),
-                  ),
-                  Expanded(
-                      child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 12.0),
-                          child: _showIconGrid(catgorySnap.data))),
-                  ElevatedButton(
-                    child: Text("Create"),
-                    onPressed: catgorySnap.data.title == null
-                        ? null
-                        : () async {
-                            var createdId = await widget.categoryBloc
-                                .createNewCategory(catgorySnap.data);
-                            if (createdId > 0) {
-                              Navigator.of(context).pop();
-                              widget.categoryBloc.getCategories();
-                            } else {
-                              //show error here...
-                            }
-                          },
-                  ),
-                ],
-              );
-            },
-          )),
+      body: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: StreamBuilder<CategoryModel>(
+          stream: widget.categoryBloc.createCategoryStream,
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            final category = snapshot.data!;
+
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                TextField(
+                  decoration: const InputDecoration(labelText: "Title"),
+                  onChanged: (text) {
+                    if (text.trim().isEmpty) return;
+
+                    var updated = category.rebuild((b) => b..title = text); // Use correct property name
+                    widget.categoryBloc.updateCreateCategory(updated);
+                  },
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  decoration: const InputDecoration(labelText: "Description"),
+                  maxLines: 2,
+                  onChanged: (text) {
+                    if (text.trim().isEmpty) return;
+
+                    var updated = category.rebuild((b) => b..desc = text); // Use correct property name
+                    widget.categoryBloc.updateCreateCategory(updated);
+                  },
+                ),
+                const SizedBox(height: 12),
+                const Text("Pick An Icon:"),
+                const SizedBox(height: 12),
+                Expanded(child: _showIconGrid(category)),
+                const SizedBox(height: 12),
+                ElevatedButton(
+                  child: const Text("Create"),
+                  onPressed: category.title == null || category.title!.isEmpty
+                      ? null
+                      : () async {
+                          int createdId = await widget.categoryBloc
+                              .createNewCategory(category);
+                          if (createdId > 0) {
+                            Navigator.of(context).pop();
+                            widget.categoryBloc.getCategories();
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text("Error creating category"),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
+                        },
+                ),
+              ],
+            );
+          },
+        ),
+      ),
     );
   }
 
-  _showIconGrid(CategoryModel category) {
-    var ls = [
+  Widget _showIconGrid(CategoryModel category) {
+    final icons = [
       Icons.web_asset,
       Icons.weekend,
       Icons.whatshot,
@@ -110,25 +128,28 @@ class _AddCategoryState extends State<AddCategory> {
       Icons.favorite_border,
     ];
 
-    return GridView.count(
-      crossAxisCount: 8,
-      children: List.generate(ls.length, (index) {
-        var iconData = ls[index];
+    return GridView.builder(
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 6,
+        crossAxisSpacing: 8,
+        mainAxisSpacing: 8,
+      ),
+      itemCount: icons.length,
+      itemBuilder: (context, index) {
+        var iconData = icons[index];
         return IconButton(
-            color: category.iconCodePoint == null
-                ? null
-                : category.iconCodePoint == iconData.codePoint
-                    ? Colors.yellowAccent
-                    : null,
-            onPressed: () {
-              var upated = category
-                  .rebuild((b) => b..iconCodePoint = iconData.codePoint);
-              widget.categoryBloc.updateCreateCategory(upated);
-            },
-            icon: Icon(
-              iconData,
-            ));
-      }),
+          color: category.iconCodePoint == iconData.codePoint
+              ? Colors.yellowAccent
+              : null,
+          onPressed: () {
+
+            var updated = category.rebuild((b) => b..iconCodePoint = iconData.codePoint); // Use correct property name
+            widget.categoryBloc.updateCreateCategory(updated);
+            
+          },
+          icon: Icon(iconData),
+        );
+      },
     );
   }
 }
