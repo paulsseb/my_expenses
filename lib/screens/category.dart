@@ -7,6 +7,8 @@ import 'package:my_expenses/blocs/category_bloc.dart';
 import 'package:flutter/material.dart';
 
 class CategoryPage extends StatefulWidget {
+  const CategoryPage({super.key});
+
   @override
   _CategoryPageState createState() => _CategoryPageState();
 }
@@ -50,7 +52,7 @@ class _CategoryPageState extends State<CategoryPage> {
           stream: _categoryBloc.categoryListStream,
           builder:
               (_, AsyncSnapshot<BuiltList<CategoryModel>> categoryListSnap) {
-            if (!categoryListSnap.hasData) return CircularProgressIndicator();
+            if (!categoryListSnap.hasData) return const CircularProgressIndicator();
 
             var lsCategories = categoryListSnap.data;
 
@@ -76,7 +78,7 @@ class _CategoryPageState extends State<CategoryPage> {
                       ),
                       title: Text(
                         category.title,
-                        style: Theme.of(context).textTheme.bodyText2.copyWith(
+                        style: Theme.of(context).textTheme.bodyMedium.copyWith(
                             color: Theme.of(context).colorScheme.secondary),
                       ),
                       subtitle: Text(

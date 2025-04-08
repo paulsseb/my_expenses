@@ -15,17 +15,17 @@ import 'package:my_expenses/blocs/category_bloc.dart';
 class AddExpense extends StatefulWidget {
   final ExpenseBloc expenseBloc;
   final CategoryBloc categoryBloc;
-  const AddExpense({Key key, this.expenseBloc, this.categoryBloc})
-      : super(key: key);
+  const AddExpense({Key? key, required this.expenseBloc, required this.categoryBloc})
+    : super(key: key);
 
   @override
   _AddExpenseState createState() => _AddExpenseState();
 }
 
 class _AddExpenseState extends State<AddExpense> {
-  FocusNode _focus = new FocusNode();
+  final FocusNode _focus = FocusNode();
   bool _showKeyboard = false;
-  TextEditingController _amountTextController = TextEditingController();
+  final TextEditingController _amountTextController = TextEditingController();
   CategoryBloc categoryBloc;
   AsyncSnapshot<ExpenseModel> expenseSnap;
   // ExpenseBloc expenseBloc;
@@ -61,7 +61,7 @@ class _AddExpenseState extends State<AddExpense> {
                   margin: const EdgeInsets.only(bottom: 12.0),
                   child: Text(
                     "Pick Category",
-                    style: Theme.of(context).textTheme.bodyText1,
+                    style: Theme.of(context).textTheme.bodyLarge,
                   )),
               Container(
                 decoration: BoxDecoration(
@@ -103,7 +103,7 @@ class _AddExpenseState extends State<AddExpense> {
               Column(
                 children: <Widget>[
                   Container(
-                      padding: EdgeInsets.all(12.0),
+                      padding: const EdgeInsets.all(12.0),
                       child: StreamBuilder(
                         stream: widget.expenseBloc.createExpenseStream,
                         builder:
@@ -120,7 +120,7 @@ class _AddExpenseState extends State<AddExpense> {
                                   MaterialButton(
                                     child: Container(
                                       child: _selectedDate == null
-                                          ? Text('Select a date')
+                                          ? const Text('Select a date')
                                           : Text(
                                               '${_selectedDate.month}-${_selectedDate.day}-${_selectedDate.year}'),
                                     ),
@@ -129,14 +129,14 @@ class _AddExpenseState extends State<AddExpense> {
                                           context: context,
                                           builder: (BuildContext context) {
                                             return AlertDialog(
-                                                title: Text('Date picker'),
-                                                content: Container(
+                                                title: const Text('Date picker'),
+                                                content: SizedBox(
                                                   height: 350,
                                                   child: Column(
                                                     children: <Widget>[
                                                       getDateRangePicker(),
                                                       MaterialButton(
-                                                        child: Text("OK"),
+                                                        child: const Text("OK"),
                                                         onPressed: () {
                                                           Navigator.pop(
                                                               context);
@@ -159,8 +159,9 @@ class _AddExpenseState extends State<AddExpense> {
                                   ),
                                   maxLines: 1,
                                   onChanged: (String text) {
-                                    if (text.trim() == "")
+                                    if (text.trim() == "") {
                                       return;
+                                    }
                                     var amount = expenseSnap.data;
                                     var upated = amount.rebuild(
                                         (b) => b..amount = double.parse(text));
@@ -169,10 +170,11 @@ class _AddExpenseState extends State<AddExpense> {
                                   }),
                               TextField(
                                   decoration:
-                                      InputDecoration(labelText: "Title"),
+                                      const InputDecoration(labelText: "Title"),
                                   onChanged: (String text) {
-                                    if (text.trim() == "")
+                                    if (text.trim() == "") {
                                       return;
+                                    }
                                     var title = expenseSnap.data;
                                     var upated =
                                         title.rebuild((b) => b..title = text);
@@ -181,11 +183,12 @@ class _AddExpenseState extends State<AddExpense> {
                                   }),
                               TextField(
                                   decoration:
-                                      InputDecoration(labelText: "Notes"),
+                                      const InputDecoration(labelText: "Notes"),
                                   maxLines: 2,
                                   onChanged: (String text) {
-                                    if (text.trim() == "")
+                                    if (text.trim() == "") {
                                       return;
+                                    }
                                     var notes = expenseSnap.data;
                                     var upated =
                                         notes.rebuild((b) => b..notes = text);
@@ -193,7 +196,6 @@ class _AddExpenseState extends State<AddExpense> {
                                         .updateCreateExpense(upated);
                                   }),
                               ElevatedButton(
-                                child: Text("Create"),
                                 onPressed: expenseSnap.data.title == null
                                     ? null
                                     : () async {
@@ -212,6 +214,7 @@ class _AddExpenseState extends State<AddExpense> {
                                           //show error here...
                                         }
                                       },
+                                child: Text("Create"),
                               ),
                             ],
                           );
@@ -226,7 +229,7 @@ class _AddExpenseState extends State<AddExpense> {
   }
 
   Widget getDateRangePicker() {
-    return Container(
+    return SizedBox(
         width: 350.0,
         height: 300.0,
         child: Card(

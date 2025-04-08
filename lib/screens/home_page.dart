@@ -44,7 +44,7 @@ class _HomePageState extends State<HomePage>
       body: TabBarView(
         controller: _tabController,
         children: [
-          DashboardPage(), // Removed 'const' if DashboardPage isn't a constant widget.
+          const DashboardPage(), // Removed 'const' if DashboardPage isn't a constant widget.
           CategoryPage(), 
           Center(
             child: Text(

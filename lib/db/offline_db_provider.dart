@@ -18,7 +18,7 @@ class OfflineDbProvider {
   static Database _database;
 
   Future<Database> get database async =>
-      _database == null ? await initDB() : _database;
+      _database ?? await initDB();
 
   initDB() async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
@@ -38,12 +38,9 @@ class OfflineDbProvider {
     }, onUpgrade: (Database db, int _, int __) async {
       var curdDbVersion = await getCurrentDbVersion(db);
 
-      var upgradeScripts = new Map.fromIterable(
-          DbMigrator.migrations.keys.where((k) => k > curdDbVersion),
-          key: (k) => k,
-          value: (k) => DbMigrator.migrations[k]);
+      var upgradeScripts = { for (var k in DbMigrator.migrations.keys.where((k) => k > curdDbVersion)) k : DbMigrator.migrations[k] };
 
-      if (upgradeScripts.length == 0) return;
+      if (upgradeScripts.isEmpty) return;
 
       upgradeScripts.keys.toList()
         ..sort()
@@ -73,5 +70,5 @@ class OfflineDbProvider {
     return await deleteDatabase(path);
   }
 
-  String _dbName = "ExpenseManager.db";
+  final String _dbName = "ExpenseManager.db";
 }

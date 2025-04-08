@@ -18,11 +18,11 @@ class ExpenseService implements ExpenseServiceBase {
     if (res.isEmpty) return BuiltList();
 
     var list = BuiltList<ExpenseModel>();
-    res.forEach((cat) {
+    for (var cat in res) {
       var expense = serializers.deserializeWith<ExpenseModel>(
           ExpenseModel.serializer, cat);
       list = list.rebuild((b) => b..add(expense));
-    });
+    }
 
     return list.rebuild((b) => b..sort((a, b) => a.title.compareTo(b.title)));
   }
@@ -53,8 +53,6 @@ class ExpenseService implements ExpenseServiceBase {
     if (res.isEmpty) return false;
 
     var entity = res.firstWhere((b) => b["title"] == title, orElse: () => null);
-
-    if (entity == null) return false;
 
     return entity.isNotEmpty;
   }

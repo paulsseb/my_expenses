@@ -70,7 +70,6 @@ class _AddCategoryState extends State<AddCategory> {
                 Expanded(child: _showIconGrid(category)),
                 const SizedBox(height: 12),
                 ElevatedButton(
-                  child: const Text("Create"),
                   onPressed: category.title == null || category.title!.isEmpty
                       ? null
                       : () async {
@@ -88,6 +87,7 @@ class _AddCategoryState extends State<AddCategory> {
                             );
                           }
                         },
+                  child: const Text("Create"),
                 ),
               ],
             );

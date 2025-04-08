@@ -6,6 +6,6 @@ import 'package:my_expenses/models/expense_model.dart';
 
 part 'serializers.g.dart';
 
-@SerializersFor(const [CategoryModel, ExpenseModel])
+@SerializersFor([CategoryModel, ExpenseModel])
 final Serializers serializers =
     (_$serializers.toBuilder()..addPlugin(StandardJsonPlugin())).build();
