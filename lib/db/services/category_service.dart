@@ -7,6 +7,7 @@ import '../offline_db_provider.dart';
 abstract class CategoryServiceBase {
   Future<BuiltList<CategoryModel>> getAllCategories();
   Future<int> createCategory(CategoryModel category);
+  Future<int> updateCategory(CategoryModel category);
   Future<int> deleteCategory(int categoryId);
 }
 
@@ -29,22 +30,29 @@ class CategoryService implements CategoryServiceBase {
 
   @override
   Future<int> createCategory(CategoryModel category) async {
-    //check if exists already
     var exists = await categoryExists(category.title);
-
     if (exists) return 0;
 
     var db = await OfflineDbProvider.provider.database;
-    //get the biggest id in the table
-    var table = await db.rawQuery("SELECT MAX(id) as id FROM Category");
-    int firstid = table.first["id"];
-    int id = table.first["id"] == null ? 1 : firstid + 1;
-    //insert to the table using the new id
-    var resultId = await db.rawInsert(
-        "INSERT Into Category (id, title, desc, iconCodePoint)"
-        " VALUES (?,?,?,?)",
-        [id, category.title, category.desc, category.iconCodePoint.toString()]);
-    return resultId;
+    return await db.insert("Category", {
+      "title": category.title,
+      "desc": category.desc,
+      "iconCodePoint": category.iconCodePoint,
+    });
+  }
+
+  @override
+  Future<int> updateCategory(CategoryModel category) async {
+    var db = await OfflineDbProvider.provider.database;
+    return await db.update(
+        "Category",
+        {
+          "title": category.title,
+          "desc": category.desc,
+          "iconCodePoint": category.iconCodePoint,
+        },
+        where: "id = ?",
+        whereArgs: [category.id]);
   }
 
   Future<bool> categoryExists(String title) async {

@@ -4,35 +4,52 @@ import 'package:my_expenses/blocs/category_bloc.dart';
 
 class AddCategory extends StatefulWidget {
   final CategoryBloc categoryBloc;
+  final CategoryModel categoryToEdit;
 
-  const AddCategory({Key key, this.categoryBloc}) : super(key: key);
+  const AddCategory({Key key, this.categoryBloc, this.categoryToEdit})
+      : super(key: key);
 
   @override
   _AddCategoryState createState() => _AddCategoryState();
 }
 
 class _AddCategoryState extends State<AddCategory> {
+  TextEditingController _titleTextController = TextEditingController();
+  TextEditingController _descTextController = TextEditingController();
+
+  bool get _isEditing => widget.categoryToEdit != null;
+
   @override
   void initState() {
     super.initState();
-    widget.categoryBloc.updateCreateCategory(CategoryModel());
+    if (_isEditing) {
+      widget.categoryBloc.updateCreateCategory(widget.categoryToEdit);
+      _titleTextController.text = widget.categoryToEdit.title ?? "";
+      _descTextController.text = widget.categoryToEdit.desc ?? "";
+    } else {
+      widget.categoryBloc.updateCreateCategory(CategoryModel());
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Add New Category"),
+        title: Text(_isEditing ? "Edit Category" : "Add New Category"),
       ),
       body: Container(
           padding: EdgeInsets.all(12.0),
           child: StreamBuilder(
             stream: widget.categoryBloc.createCategoryStream,
             builder: (ctxt, AsyncSnapshot<CategoryModel> catgorySnap) {
+              if (catgorySnap.hasError) {
+                return Text("Something went wrong: ${catgorySnap.error}");
+              }
               if (!catgorySnap.hasData) return CircularProgressIndicator();
               return Column(
                 children: <Widget>[
                   TextField(
+                      controller: _titleTextController,
                       decoration: InputDecoration(labelText: "Title"),
                       onChanged: (String text) {
                         if (text == null || text.trim() == "") return;
@@ -41,6 +58,7 @@ class _AddCategoryState extends State<AddCategory> {
                         widget.categoryBloc.updateCreateCategory(upated);
                       }),
                   TextField(
+                      controller: _descTextController,
                       decoration: InputDecoration(labelText: "Description"),
                       maxLines: 2,
                       onChanged: (String text) {
@@ -58,17 +76,31 @@ class _AddCategoryState extends State<AddCategory> {
                           padding: const EdgeInsets.symmetric(vertical: 12.0),
                           child: _showIconGrid(catgorySnap.data))),
                   ElevatedButton(
-                    child: Text("Create"),
+                    child: Text(_isEditing ? "Save" : "Create"),
                     onPressed: catgorySnap.data.title == null
                         ? null
                         : () async {
-                            var createdId = await widget.categoryBloc
-                                .createNewCategory(catgorySnap.data);
-                            if (createdId > 0) {
-                              Navigator.of(context).pop();
-                              widget.categoryBloc.getCategories();
-                            } else {
-                              //show error here...
+                            try {
+                              var resultId = _isEditing
+                                  ? await widget.categoryBloc
+                                      .saveCategory(catgorySnap.data)
+                                  : await widget.categoryBloc
+                                      .createNewCategory(catgorySnap.data);
+                              if (resultId > 0) {
+                                widget.categoryBloc.getCategories();
+                                Navigator.of(context).pop();
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                        content: Text(_isEditing
+                                            ? "Couldn't save this category"
+                                            : "A category with that title already exists")));
+                              }
+                            } catch (err) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                      content:
+                                          Text("Something went wrong: $err")));
                             }
                           },
                   ),

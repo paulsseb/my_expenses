@@ -53,6 +53,10 @@ class ExpenseBloc {
     return await expenseService.createExpense(expense);
   }
 
+  Future<int> saveExpense(ExpenseModel expense) async {
+    return await expenseService.updateExpense(expense);
+  }
+
   dispose() {
     _createExpenseController.close();
     _expenseListSelectDateController.close();

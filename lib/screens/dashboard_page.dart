@@ -41,6 +41,21 @@ class _DashboardPageState extends State<DashboardPage> {
     return _getDashboard();
   }
 
+  void _shiftSelectedDate(int days) {
+    var current = DateTime.parse(_selectedDate);
+    setState(() {
+      _selectedDate =
+          DateFormat('yyyy-MM-dd').format(current.add(Duration(days: days)));
+    });
+    _expenseBloc.getExpensesByDate(_selectedDate);
+  }
+
+  void _onAddOrEditExpenseClosed(dynamic returnedDate) {
+    if (returnedDate == null) return;
+    setState(() => _selectedDate = returnedDate);
+    _expenseBloc.getExpensesByDate(_selectedDate);
+  }
+
   Widget _getDashboard() {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
@@ -51,7 +66,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     builder: (context) => AddExpense(
                           expenseBloc: _expenseBloc,
                           categoryBloc: _categoryBloc,
-                        )));
+                        ))).then(_onAddOrEditExpenseClosed);
           },
           child: const Icon(Icons.add)),
       body: Column(
@@ -63,7 +78,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   IconButton(
-                    onPressed: () {},
+                    onPressed: () => _shiftSelectedDate(-1),
                     icon: const Icon(Icons.arrow_back),
                   ),
                   Container(
@@ -99,7 +114,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     ),
                   ),
                   IconButton(
-                    onPressed: () {},
+                    onPressed: () => _shiftSelectedDate(1),
                     icon: const Icon(Icons.arrow_forward),
                   ),
                 ],
@@ -141,11 +156,25 @@ class _DashboardPageState extends State<DashboardPage> {
         StreamBuilder(
           stream: _expenseBloc.expenseListSelectDateStream,
           builder: (_, AsyncSnapshot<BuiltList<ExpenseModel>> expenseListSnap) {
+            if (expenseListSnap.hasError) {
+              return Expanded(
+                child: Center(
+                  child: Text(
+                      "Couldn't load expenses: ${expenseListSnap.error}"),
+                ),
+              );
+            }
             if (!expenseListSnap.hasData) {
               return const CircularProgressIndicator();
             }
 
             var lsCategories = expenseListSnap.data;
+
+            if (lsCategories.isEmpty) {
+              return const Expanded(
+                child: Center(child: Text("No expenses for this day")),
+              );
+            }
 
             return Expanded(
               child: ListView.builder(
@@ -161,7 +190,16 @@ class _DashboardPageState extends State<DashboardPage> {
                             color: Colors.white)),
                     margin: const EdgeInsets.all(12.0),
                     child: ListTile(
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => AddExpense(
+                                      expenseBloc: _expenseBloc,
+                                      categoryBloc: _categoryBloc,
+                                      expenseToEdit: expense,
+                                    ))).then(_onAddOrEditExpenseClosed);
+                      },
                       trailing: IconButton(
                         icon: const Icon(Icons.delete),
                         color: Theme.of(context).primaryColorLight,
