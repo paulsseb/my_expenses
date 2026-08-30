@@ -15,9 +15,12 @@ import 'package:my_expenses/blocs/category_bloc.dart';
 class AddExpense extends StatefulWidget {
   final ExpenseBloc expenseBloc;
   final CategoryBloc categoryBloc;
-  final ExpenseModel expenseToEdit;
+  final ExpenseModel? expenseToEdit;
   const AddExpense(
-      {Key key, this.expenseBloc, this.categoryBloc, this.expenseToEdit})
+      {Key? key,
+      required this.expenseBloc,
+      required this.categoryBloc,
+      this.expenseToEdit})
       : super(key: key);
 
   @override
@@ -30,7 +33,7 @@ class _AddExpenseState extends State<AddExpense> {
   TextEditingController _amountTextController = TextEditingController();
   TextEditingController _titleTextController = TextEditingController();
   TextEditingController _notesTextController = TextEditingController();
-  AsyncSnapshot<ExpenseModel> expenseSnap;
+  AsyncSnapshot<ExpenseModel>? expenseSnap;
 
   bool get _isEditing => widget.expenseToEdit != null;
 
@@ -38,16 +41,14 @@ class _AddExpenseState extends State<AddExpense> {
   void initState() {
     super.initState();
     if (_isEditing) {
-      widget.expenseBloc.updateCreateExpense(widget.expenseToEdit);
-      selectedCategoryId = widget.expenseToEdit.categoryId ?? 0;
-      _selectedDate = widget.expenseToEdit.date == null
-          ? DateTime.now()
-          : DateTime.parse(widget.expenseToEdit.date);
-      _amountTextController.text = widget.expenseToEdit.amount == null
-          ? ""
-          : widget.expenseToEdit.amount.toString();
-      _titleTextController.text = widget.expenseToEdit.title ?? "";
-      _notesTextController.text = widget.expenseToEdit.notes ?? "";
+      final editing = widget.expenseToEdit!;
+      widget.expenseBloc.updateCreateExpense(editing);
+      selectedCategoryId = editing.categoryId ?? 0;
+      _selectedDate =
+          editing.date == null ? DateTime.now() : DateTime.parse(editing.date!);
+      _amountTextController.text = editing.amount?.toString() ?? "";
+      _titleTextController.text = editing.title ?? "";
+      _notesTextController.text = editing.notes ?? "";
     } else {
       widget.expenseBloc.updateCreateExpense(
           ExpenseModel((b) => b..date = DateFormat('yyyy-MM-dd').format(_selectedDate)));
@@ -79,7 +80,7 @@ class _AddExpenseState extends State<AddExpense> {
                   margin: const EdgeInsets.only(bottom: 12.0),
                   child: Text(
                     "Pick Category",
-                    style: Theme.of(context).textTheme.bodyText1,
+                    style: Theme.of(context).textTheme.bodyLarge,
                   )),
               Container(
                 decoration: BoxDecoration(
@@ -101,8 +102,9 @@ class _AddExpenseState extends State<AddExpense> {
                     }
 
                     return Wrap(
-                        children: List.generate(snap.data.length, (int index) {
-                      var categoryModel = snap.data[index];
+                        children:
+                            List.generate(snap.data!.length, (int index) {
+                      var categoryModel = snap.data![index];
                       return Container(
                         margin: const EdgeInsets.symmetric(
                           horizontal: 2.0,
@@ -111,10 +113,10 @@ class _AddExpenseState extends State<AddExpense> {
                           selectedColor:
                               Theme.of(context).colorScheme.secondary,
                           selected: categoryModel.id == selectedCategoryId,
-                          label: Text(categoryModel.title),
+                          label: Text(categoryModel.title ?? ""),
                           onSelected: (selected) {
                             setState(() {
-                              selectedCategoryId = categoryModel.id;
+                              selectedCategoryId = categoryModel.id ?? 0;
                             });
                           },
                         ),
@@ -132,11 +134,11 @@ class _AddExpenseState extends State<AddExpense> {
                         builder:
                             (ctxt, AsyncSnapshot<ExpenseModel> expenseSnap2) {
                           expenseSnap = expenseSnap2;
-                          if (expenseSnap.hasError) {
+                          if (expenseSnap2.hasError) {
                             return Text(
-                                "Something went wrong: ${expenseSnap.error}");
+                                "Something went wrong: ${expenseSnap2.error}");
                           }
-                          if (!expenseSnap.hasData) {
+                          if (!expenseSnap2.hasData) {
                             return const CircularProgressIndicator();
                           }
                           return Column(
@@ -186,7 +188,7 @@ class _AddExpenseState extends State<AddExpense> {
                                   onChanged: (String text) {
                                     var parsedAmount = double.tryParse(text);
                                     if (parsedAmount == null) return;
-                                    var amount = expenseSnap.data;
+                                    var amount = expenseSnap2.data!;
                                     var upated = amount
                                         .rebuild((b) => b..amount = parsedAmount);
                                     widget.expenseBloc
@@ -197,9 +199,8 @@ class _AddExpenseState extends State<AddExpense> {
                                   decoration:
                                       InputDecoration(labelText: "Title"),
                                   onChanged: (String text) {
-                                    if (text == null || text.trim() == "")
-                                      return;
-                                    var title = expenseSnap.data;
+                                    if (text.trim() == "") return;
+                                    var title = expenseSnap2.data!;
                                     var upated =
                                         title.rebuild((b) => b..title = text);
                                     widget.expenseBloc
@@ -211,9 +212,8 @@ class _AddExpenseState extends State<AddExpense> {
                                       InputDecoration(labelText: "Notes"),
                                   maxLines: 2,
                                   onChanged: (String text) {
-                                    if (text == null || text.trim() == "")
-                                      return;
-                                    var notes = expenseSnap.data;
+                                    if (text.trim() == "") return;
+                                    var notes = expenseSnap2.data!;
                                     var upated =
                                         notes.rebuild((b) => b..notes = text);
                                     widget.expenseBloc
@@ -221,10 +221,10 @@ class _AddExpenseState extends State<AddExpense> {
                                   }),
                               ElevatedButton(
                                 child: Text(_isEditing ? "Save" : "Create"),
-                                onPressed: expenseSnap.data.title == null
+                                onPressed: expenseSnap2.data!.title == null
                                     ? null
                                     : () async {
-                                        var expnseCat = expenseSnap.data;
+                                        var expnseCat = expenseSnap2.data!;
                                         var upated = expnseCat.rebuild((b) =>
                                             b..categoryId = selectedCategoryId);
                                         await widget.expenseBloc
@@ -284,7 +284,7 @@ class _AddExpenseState extends State<AddExpense> {
     if (args.value == null) {
       _selectedDate = DateTime.now();
     }
-    var date = expenseSnap.data;
+    var date = expenseSnap!.data!;
     var upated = date.rebuild(
         (b) => b..date = DateFormat('yyyy-MM-dd').format(_selectedDate));
     widget.expenseBloc.updateCreateExpense(upated);
@@ -339,7 +339,7 @@ class _AddExpenseState extends State<AddExpense> {
 
 // This class simply decorates a row of widgets.
 class _DatePickerItem extends StatelessWidget {
-  const _DatePickerItem({this.children});
+  const _DatePickerItem({required this.children});
 
   final List<Widget> children;
 

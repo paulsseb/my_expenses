@@ -10,16 +10,18 @@ import 'package:rxdart/rxdart.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 class ReportPage extends StatefulWidget {
+  const ReportPage({super.key});
+
   @override
   _ReportPageState createState() => _ReportPageState();
 }
 
 class _ReportPageState extends State<ReportPage> {
-  ExpenseBloc _expenseBloc;
-  CategoryBloc _categoryBloc;
-  TooltipBehavior _categoryTooltip;
-  TooltipBehavior _timeTooltip;
-  Stream<List<dynamic>> _reportStream;
+  late ExpenseBloc _expenseBloc;
+  late CategoryBloc _categoryBloc;
+  late TooltipBehavior _categoryTooltip;
+  late TooltipBehavior _timeTooltip;
+  late Stream<List<dynamic>> _reportStream;
 
   @override
   void initState() {
@@ -52,8 +54,8 @@ class _ReportPageState extends State<ReportPage> {
           return const Center(child: CircularProgressIndicator());
         }
 
-        BuiltList<CategoryModel> categories = snap.data[0];
-        BuiltList<ExpenseModel> expenses = snap.data[1];
+        BuiltList<CategoryModel> categories = snap.data![0];
+        BuiltList<ExpenseModel> expenses = snap.data![1];
 
         if (expenses.isEmpty) {
           return const Center(
@@ -70,7 +72,7 @@ class _ReportPageState extends State<ReportPage> {
               Padding(
                 padding: const EdgeInsets.fromLTRB(12.0, 16.0, 12.0, 0),
                 child: Text("Spending by Category",
-                    style: Theme.of(context).textTheme.bodyText1),
+                    style: Theme.of(context).textTheme.bodyLarge),
               ),
               SizedBox(
                 height: 300,
@@ -78,7 +80,7 @@ class _ReportPageState extends State<ReportPage> {
                   primaryXAxis: CategoryAxis(),
                   primaryYAxis: NumericAxis(),
                   tooltipBehavior: _categoryTooltip,
-                  series: <ChartSeries<_ChartData, String>>[
+                  series: <CartesianSeries<_ChartData, String>>[
                     ColumnSeries<_ChartData, String>(
                       dataSource: categoryData,
                       xValueMapper: (_ChartData d, _) => d.x,
@@ -92,7 +94,7 @@ class _ReportPageState extends State<ReportPage> {
               Padding(
                 padding: const EdgeInsets.fromLTRB(12.0, 16.0, 12.0, 0),
                 child: Text("Spending Over Time",
-                    style: Theme.of(context).textTheme.bodyText1),
+                    style: Theme.of(context).textTheme.bodyLarge),
               ),
               SizedBox(
                 height: 300,
@@ -100,7 +102,7 @@ class _ReportPageState extends State<ReportPage> {
                   primaryXAxis: CategoryAxis(),
                   primaryYAxis: NumericAxis(),
                   tooltipBehavior: _timeTooltip,
-                  series: <ChartSeries<_ChartData, String>>[
+                  series: <CartesianSeries<_ChartData, String>>[
                     LineSeries<_ChartData, String>(
                       dataSource: timeData,
                       xValueMapper: (_ChartData d, _) => d.x,
@@ -130,8 +132,13 @@ class _ReportPageState extends State<ReportPage> {
     }
 
     var data = totalsByCategoryId.entries.map((entry) {
-      var category = categories.firstWhere((c) => c.id == entry.key,
-          orElse: () => null);
+      CategoryModel? category;
+      for (final c in categories) {
+        if (c.id == entry.key) {
+          category = c;
+          break;
+        }
+      }
       return _ChartData(category?.title ?? "Uncategorized", entry.value);
     }).toList();
 
@@ -148,7 +155,7 @@ class _ReportPageState extends State<ReportPage> {
 
     var sortedDates = totalsByDate.keys.toList()..sort();
     return sortedDates
-        .map((date) => _ChartData(date, totalsByDate[date]))
+        .map((date) => _ChartData(date, totalsByDate[date] ?? 0))
         .toList();
   }
 }

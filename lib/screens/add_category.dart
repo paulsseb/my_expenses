@@ -4,9 +4,10 @@ import 'package:my_expenses/blocs/category_bloc.dart';
 
 class AddCategory extends StatefulWidget {
   final CategoryBloc categoryBloc;
-  final CategoryModel categoryToEdit;
+  final CategoryModel? categoryToEdit;
 
-  const AddCategory({Key key, this.categoryBloc, this.categoryToEdit})
+  const AddCategory(
+      {Key? key, required this.categoryBloc, this.categoryToEdit})
       : super(key: key);
 
   @override
@@ -23,9 +24,10 @@ class _AddCategoryState extends State<AddCategory> {
   void initState() {
     super.initState();
     if (_isEditing) {
-      widget.categoryBloc.updateCreateCategory(widget.categoryToEdit);
-      _titleTextController.text = widget.categoryToEdit.title ?? "";
-      _descTextController.text = widget.categoryToEdit.desc ?? "";
+      final editing = widget.categoryToEdit!;
+      widget.categoryBloc.updateCreateCategory(editing);
+      _titleTextController.text = editing.title ?? "";
+      _descTextController.text = editing.desc ?? "";
     } else {
       widget.categoryBloc.updateCreateCategory(CategoryModel());
     }
@@ -52,8 +54,8 @@ class _AddCategoryState extends State<AddCategory> {
                       controller: _titleTextController,
                       decoration: InputDecoration(labelText: "Title"),
                       onChanged: (String text) {
-                        if (text == null || text.trim() == "") return;
-                        var category = catgorySnap.data;
+                        if (text.trim() == "") return;
+                        var category = catgorySnap.data!;
                         var upated = category.rebuild((b) => b..title = text);
                         widget.categoryBloc.updateCreateCategory(upated);
                       }),
@@ -62,8 +64,8 @@ class _AddCategoryState extends State<AddCategory> {
                       decoration: InputDecoration(labelText: "Description"),
                       maxLines: 2,
                       onChanged: (String text) {
-                        if (text == null || text.trim() == "") return;
-                        var category = catgorySnap.data;
+                        if (text.trim() == "") return;
+                        var category = catgorySnap.data!;
                         var upated = category.rebuild((b) => b..desc = text);
                         widget.categoryBloc.updateCreateCategory(upated);
                       }),
@@ -74,18 +76,18 @@ class _AddCategoryState extends State<AddCategory> {
                   Expanded(
                       child: Container(
                           padding: const EdgeInsets.symmetric(vertical: 12.0),
-                          child: _showIconGrid(catgorySnap.data))),
+                          child: _showIconGrid(catgorySnap.data!))),
                   ElevatedButton(
                     child: Text(_isEditing ? "Save" : "Create"),
-                    onPressed: catgorySnap.data.title == null
+                    onPressed: catgorySnap.data!.title == null
                         ? null
                         : () async {
                             try {
                               var resultId = _isEditing
                                   ? await widget.categoryBloc
-                                      .saveCategory(catgorySnap.data)
+                                      .saveCategory(catgorySnap.data!)
                                   : await widget.categoryBloc
-                                      .createNewCategory(catgorySnap.data);
+                                      .createNewCategory(catgorySnap.data!);
                               if (resultId > 0) {
                                 widget.categoryBloc.getCategories();
                                 Navigator.of(context).pop();

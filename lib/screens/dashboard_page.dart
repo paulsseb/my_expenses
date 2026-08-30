@@ -13,16 +13,16 @@ import 'package:my_expenses/blocs/category_bloc.dart';
 import 'package:my_expenses/blocs/expense_bloc.dart';
 
 class DashboardPage extends StatefulWidget {
-  const DashboardPage({Key key}) : super(key: key);
+  const DashboardPage({Key? key}) : super(key: key);
 
   @override
   _DashboardPageState createState() => _DashboardPageState();
 }
 
 class _DashboardPageState extends State<DashboardPage> {
-  ExpenseBloc _expenseBloc;
-  CategoryBloc _categoryBloc;
-  String _selectedDate;
+  late ExpenseBloc _expenseBloc;
+  late CategoryBloc _categoryBloc;
+  late String _selectedDate;
 
   @override
   initState() {
@@ -168,7 +168,7 @@ class _DashboardPageState extends State<DashboardPage> {
               return const CircularProgressIndicator();
             }
 
-            var lsCategories = expenseListSnap.data;
+            var lsCategories = expenseListSnap.data!;
 
             if (lsCategories.isEmpty) {
               return const Expanded(
@@ -203,7 +203,8 @@ class _DashboardPageState extends State<DashboardPage> {
                       trailing: IconButton(
                         icon: const Icon(Icons.delete),
                         color: Theme.of(context).primaryColorLight,
-                        onPressed: () => _expenseBloc.deleteExpense(expense.id),
+                        onPressed: () =>
+                            _expenseBloc.deleteExpense(expense.id!),
                       ),
                       title: Text(
                         "${expense.title} - Ugx.${expense.amount}",

@@ -22,11 +22,12 @@ class ExpenseService implements ExpenseServiceBase {
     var list = BuiltList<ExpenseModel>();
     res.forEach((cat) {
       var expense = serializers.deserializeWith<ExpenseModel>(
-          ExpenseModel.serializer, cat);
+          ExpenseModel.serializer, cat)!;
       list = list.rebuild((b) => b..add(expense));
     });
 
-    return list.rebuild((b) => b..sort((a, b) => a.title.compareTo(b.title)));
+    return list.rebuild(
+        (b) => b..sort((a, b) => (a.title ?? "").compareTo(b.title ?? "")));
   }
 
   @override
@@ -39,16 +40,17 @@ class ExpenseService implements ExpenseServiceBase {
     var list = BuiltList<ExpenseModel>();
     res.forEach((cat) {
       var expense = serializers.deserializeWith<ExpenseModel>(
-          ExpenseModel.serializer, cat);
+          ExpenseModel.serializer, cat)!;
       list = list.rebuild((b) => b..add(expense));
     });
 
-    return list.rebuild((b) => b..sort((a, b) => a.title.compareTo(b.title)));
+    return list.rebuild(
+        (b) => b..sort((a, b) => (a.title ?? "").compareTo(b.title ?? "")));
   }
 
   @override
   Future<int> createExpense(ExpenseModel expense) async {
-    var exists = await expenseExists(expense.title);
+    var exists = await expenseExists(expense.title ?? "");
     if (exists) return 0;
 
     var db = await OfflineDbProvider.provider.database;
@@ -82,11 +84,10 @@ class ExpenseService implements ExpenseServiceBase {
     var res = await db.query("Expense");
     if (res.isEmpty) return false;
 
-    var entity = res.firstWhere((b) => b["title"] == title, orElse: () => null);
-
-    if (entity == null) return false;
-
-    return entity.isNotEmpty;
+    for (var entity in res) {
+      if (entity["title"] == title) return entity.isNotEmpty;
+    }
+    return false;
   }
 
   @override

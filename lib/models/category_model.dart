@@ -7,15 +7,12 @@ part 'category_model.g.dart';
 abstract class CategoryModel
     implements Built<CategoryModel, CategoryModelBuilder> {
   CategoryModel._();
-  factory CategoryModel([updates(CategoryModelBuilder b)]) = _$CategoryModel;
+  factory CategoryModel([void Function(CategoryModelBuilder b)? updates]) =
+      _$CategoryModel;
   static Serializer<CategoryModel> get serializer => _$categoryModelSerializer;
 
-  @nullable
-  int get id;
-  @nullable
-  String get title;
-  @nullable
-  String get desc;
-  @nullable
-  int get iconCodePoint;
+  int? get id;
+  String? get title;
+  String? get desc;
+  int? get iconCodePoint;
 }

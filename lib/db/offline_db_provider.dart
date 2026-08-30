@@ -15,12 +15,12 @@ class OfflineDbProvider {
   //we have only one class instance and provide a global point access to it
   static final OfflineDbProvider provider = OfflineDbProvider._();
 
-  static Database _database;
+  static Database? _database;
 
   Future<Database> get database async =>
-      _database == null ? await initDB() : _database;
+      _database == null ? await initDB() : _database!;
 
-  initDB() async {
+  Future<Database> initDB() async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, _dbName);
 
@@ -32,13 +32,13 @@ class OfflineDbProvider {
       DbMigrator.migrations.keys.toList()
         ..sort()
         ..forEach((k) async {
-          var script = DbMigrator.migrations[k];
+          var script = DbMigrator.migrations[k]!;
           await db.execute(script);
         });
     }, onUpgrade: (Database db, int _, int __) async {
       var curdDbVersion = await getCurrentDbVersion(db);
 
-      var upgradeScripts = new Map.fromIterable(
+      var upgradeScripts = Map.fromIterable(
           DbMigrator.migrations.keys.where((k) => k > curdDbVersion),
           key: (k) => k,
           value: (k) => DbMigrator.migrations[k]);
@@ -48,13 +48,13 @@ class OfflineDbProvider {
       upgradeScripts.keys.toList()
         ..sort()
         ..forEach((k) async {
-          var script = upgradeScripts[k];
+          var script = upgradeScripts[k]!;
           await db.execute(script);
         });
 
       _upgradeDbVersion(db, maxMigratedDbVersion);
     });
-    return _database;
+    return _database!;
   }
 
   _upgradeDbVersion(Database db, int version) async {

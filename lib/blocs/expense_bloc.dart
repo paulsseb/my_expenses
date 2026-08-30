@@ -37,11 +37,9 @@ class ExpenseBloc {
     });
   }
 
-  getExpensesByDate(String selectedDate) {
-    String pursedate = selectedDate;
-    if (selectedDate == null) {
-      pursedate = DateFormat('yyyy-MM-dd').format(DateTime.now());
-    }
+  getExpensesByDate(String? selectedDate) {
+    String pursedate =
+        selectedDate ?? DateFormat('yyyy-MM-dd').format(DateTime.now());
     expenseService.getExpensesByDate(pursedate).then((exp) {
       _expenseListSelectDateController.sink.add(exp);
     }).catchError((err) {

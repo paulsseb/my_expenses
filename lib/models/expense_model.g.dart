@@ -6,8 +6,7 @@ part of 'expense_model.dart';
 // BuiltValueGenerator
 // **************************************************************************
 
-Serializer<ExpenseModel> _$expenseModelSerializer =
-    new _$ExpenseModelSerializer();
+Serializer<ExpenseModel> _$expenseModelSerializer = _$ExpenseModelSerializer();
 
 class _$ExpenseModelSerializer implements StructuredSerializer<ExpenseModel> {
   @override
@@ -16,10 +15,10 @@ class _$ExpenseModelSerializer implements StructuredSerializer<ExpenseModel> {
   final String wireName = 'ExpenseModel';
 
   @override
-  Iterable<Object> serialize(Serializers serializers, ExpenseModel object,
+  Iterable<Object?> serialize(Serializers serializers, ExpenseModel object,
       {FullType specifiedType = FullType.unspecified}) {
-    final result = <Object>[];
-    Object value;
+    final result = <Object?>[];
+    Object? value;
     value = object.id;
     if (value != null) {
       result
@@ -64,39 +63,40 @@ class _$ExpenseModelSerializer implements StructuredSerializer<ExpenseModel> {
   }
 
   @override
-  ExpenseModel deserialize(Serializers serializers, Iterable<Object> serialized,
+  ExpenseModel deserialize(
+      Serializers serializers, Iterable<Object?> serialized,
       {FullType specifiedType = FullType.unspecified}) {
-    final result = new ExpenseModelBuilder();
+    final result = ExpenseModelBuilder();
 
     final iterator = serialized.iterator;
     while (iterator.moveNext()) {
-      final key = iterator.current as String;
+      final key = iterator.current! as String;
       iterator.moveNext();
-      final Object value = iterator.current;
+      final Object? value = iterator.current;
       switch (key) {
         case 'id':
           result.id = serializers.deserialize(value,
-              specifiedType: const FullType(int)) as int;
+              specifiedType: const FullType(int)) as int?;
           break;
         case 'categoryId':
           result.categoryId = serializers.deserialize(value,
-              specifiedType: const FullType(int)) as int;
+              specifiedType: const FullType(int)) as int?;
           break;
         case 'title':
           result.title = serializers.deserialize(value,
-              specifiedType: const FullType(String)) as String;
+              specifiedType: const FullType(String)) as String?;
           break;
         case 'notes':
           result.notes = serializers.deserialize(value,
-              specifiedType: const FullType(String)) as String;
+              specifiedType: const FullType(String)) as String?;
           break;
         case 'amount':
           result.amount = serializers.deserialize(value,
-              specifiedType: const FullType(double)) as double;
+              specifiedType: const FullType(double)) as double?;
           break;
         case 'date':
           result.date = serializers.deserialize(value,
-              specifiedType: const FullType(String)) as String;
+              specifiedType: const FullType(String)) as String?;
           break;
       }
     }
@@ -107,20 +107,20 @@ class _$ExpenseModelSerializer implements StructuredSerializer<ExpenseModel> {
 
 class _$ExpenseModel extends ExpenseModel {
   @override
-  final int id;
+  final int? id;
   @override
-  final int categoryId;
+  final int? categoryId;
   @override
-  final String title;
+  final String? title;
   @override
-  final String notes;
+  final String? notes;
   @override
-  final double amount;
+  final double? amount;
   @override
-  final String date;
+  final String? date;
 
-  factory _$ExpenseModel([void Function(ExpenseModelBuilder) updates]) =>
-      (new ExpenseModelBuilder()..update(updates))._build();
+  factory _$ExpenseModel([void Function(ExpenseModelBuilder)? updates]) =>
+      (ExpenseModelBuilder()..update(updates))._build();
 
   _$ExpenseModel._(
       {this.id,
@@ -130,13 +130,12 @@ class _$ExpenseModel extends ExpenseModel {
       this.amount,
       this.date})
       : super._();
-
   @override
   ExpenseModel rebuild(void Function(ExpenseModelBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  ExpenseModelBuilder toBuilder() => new ExpenseModelBuilder()..replace(this);
+  ExpenseModelBuilder toBuilder() => ExpenseModelBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -178,31 +177,31 @@ class _$ExpenseModel extends ExpenseModel {
 
 class ExpenseModelBuilder
     implements Builder<ExpenseModel, ExpenseModelBuilder> {
-  _$ExpenseModel _$v;
+  _$ExpenseModel? _$v;
 
-  int _id;
-  int get id => _$this._id;
-  set id(int id) => _$this._id = id;
+  int? _id;
+  int? get id => _$this._id;
+  set id(int? id) => _$this._id = id;
 
-  int _categoryId;
-  int get categoryId => _$this._categoryId;
-  set categoryId(int categoryId) => _$this._categoryId = categoryId;
+  int? _categoryId;
+  int? get categoryId => _$this._categoryId;
+  set categoryId(int? categoryId) => _$this._categoryId = categoryId;
 
-  String _title;
-  String get title => _$this._title;
-  set title(String title) => _$this._title = title;
+  String? _title;
+  String? get title => _$this._title;
+  set title(String? title) => _$this._title = title;
 
-  String _notes;
-  String get notes => _$this._notes;
-  set notes(String notes) => _$this._notes = notes;
+  String? _notes;
+  String? get notes => _$this._notes;
+  set notes(String? notes) => _$this._notes = notes;
 
-  double _amount;
-  double get amount => _$this._amount;
-  set amount(double amount) => _$this._amount = amount;
+  double? _amount;
+  double? get amount => _$this._amount;
+  set amount(double? amount) => _$this._amount = amount;
 
-  String _date;
-  String get date => _$this._date;
-  set date(String date) => _$this._date = date;
+  String? _date;
+  String? get date => _$this._date;
+  set date(String? date) => _$this._date = date;
 
   ExpenseModelBuilder();
 
@@ -222,12 +221,11 @@ class ExpenseModelBuilder
 
   @override
   void replace(ExpenseModel other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$ExpenseModel;
   }
 
   @override
-  void update(void Function(ExpenseModelBuilder) updates) {
+  void update(void Function(ExpenseModelBuilder)? updates) {
     if (updates != null) updates(this);
   }
 
@@ -236,13 +234,14 @@ class ExpenseModelBuilder
 
   _$ExpenseModel _build() {
     final _$result = _$v ??
-        new _$ExpenseModel._(
-            id: id,
-            categoryId: categoryId,
-            title: title,
-            notes: notes,
-            amount: amount,
-            date: date);
+        _$ExpenseModel._(
+          id: id,
+          categoryId: categoryId,
+          title: title,
+          notes: notes,
+          amount: amount,
+          date: date,
+        );
     replace(_$result);
     return _$result;
   }

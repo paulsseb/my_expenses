@@ -6,19 +6,14 @@ part 'expense_model.g.dart';
 abstract class ExpenseModel
     implements Built<ExpenseModel, ExpenseModelBuilder> {
   ExpenseModel._();
-  factory ExpenseModel([updates(ExpenseModelBuilder b)]) = _$ExpenseModel;
+  factory ExpenseModel([void Function(ExpenseModelBuilder b)? updates]) =
+      _$ExpenseModel;
   static Serializer<ExpenseModel> get serializer => _$expenseModelSerializer;
 
-  @nullable
-  int get id;
-  @nullable
-  int get categoryId;
-  @nullable
-  String get title;
-  @nullable
-  String get notes;
-  @nullable
-  double get amount;
-  @nullable
-  String get date;
+  int? get id;
+  int? get categoryId;
+  String? get title;
+  String? get notes;
+  double? get amount;
+  String? get date;
 }

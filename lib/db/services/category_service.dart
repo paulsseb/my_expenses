@@ -21,16 +21,17 @@ class CategoryService implements CategoryServiceBase {
     var list = BuiltList<CategoryModel>();
     res.forEach((cat) {
       var category = serializers.deserializeWith<CategoryModel>(
-          CategoryModel.serializer, cat);
+          CategoryModel.serializer, cat)!;
       list = list.rebuild((b) => b..add(category));
     });
 
-    return list.rebuild((b) => b..sort((a, b) => a.title.compareTo(b.title)));
+    return list.rebuild(
+        (b) => b..sort((a, b) => (a.title ?? "").compareTo(b.title ?? "")));
   }
 
   @override
   Future<int> createCategory(CategoryModel category) async {
-    var exists = await categoryExists(category.title);
+    var exists = await categoryExists(category.title ?? "");
     if (exists) return 0;
 
     var db = await OfflineDbProvider.provider.database;
@@ -60,11 +61,10 @@ class CategoryService implements CategoryServiceBase {
     var res = await db.query("Category");
     if (res.isEmpty) return false;
 
-    var entity = res.firstWhere((b) => b["title"] == title, orElse: () => null);
-
-    if (entity == null) return false;
-
-    return entity.isNotEmpty;
+    for (var entity in res) {
+      if (entity["title"] == title) return entity.isNotEmpty;
+    }
+    return false;
   }
 
   @override
