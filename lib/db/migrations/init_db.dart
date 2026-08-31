@@ -14,6 +14,7 @@ const String createExpenseDbScript = """
       categoryId INTEGER, 
       title TEXT,
       notes TEXT,
-      amount REAL
+      amount REAL,
+      date TEXT
       );
     """;

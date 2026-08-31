@@ -36,6 +36,10 @@ class CategoryBloc {
     return await categoryService.createCategory(catgory);
   }
 
+  Future<int> saveCategory(CategoryModel catgory) async {
+    return await categoryService.updateCategory(catgory);
+  }
+
   dispose() {
     _createCategoryController.close();
     _categoryListController.close();

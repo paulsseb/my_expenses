@@ -1,9 +1,10 @@
 import 'package:my_expenses/screens/category.dart';
+import 'package:my_expenses/screens/report.dart';
 import 'package:my_expenses/screens/dashboard_page.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key key}) : super(key: key);
+  const HomePage({Key? key}) : super(key: key);
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -11,7 +12,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
-  TabController _tabController;
+  late TabController _tabController;
 
   final List<String> _tabs = ["Home", "Category", "Report"];
 
@@ -40,11 +41,7 @@ class _HomePageState extends State<HomePage>
           children: <Widget>[
             const DashboardPage(),
             CategoryPage(),
-            Center(
-                child: Text(
-              "Reports",
-              style: Theme.of(context).textTheme.bodyText1,
-            ))
+            ReportPage(),
           ],
         ));
   }

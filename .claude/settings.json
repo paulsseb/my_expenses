@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(flutter pub *)",
+      "Bash(flutter doctor *)",
+      "Read(//c/Users/paulsseb/AppData/Local/Pub/Cache/hosted/pub.dev/frontend_server_client-3.2.0/lib/**)"
+    ]
+  }
+}

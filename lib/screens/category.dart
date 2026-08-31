@@ -12,7 +12,7 @@ class CategoryPage extends StatefulWidget {
 }
 
 class _CategoryPageState extends State<CategoryPage> {
-  CategoryBloc _categoryBloc;
+  late CategoryBloc _categoryBloc;
 
   @override
   initState() {
@@ -50,9 +50,23 @@ class _CategoryPageState extends State<CategoryPage> {
           stream: _categoryBloc.categoryListStream,
           builder:
               (_, AsyncSnapshot<BuiltList<CategoryModel>> categoryListSnap) {
+            if (categoryListSnap.hasError) {
+              return Expanded(
+                child: Center(
+                  child: Text(
+                      "Couldn't load categories: ${categoryListSnap.error}"),
+                ),
+              );
+            }
             if (!categoryListSnap.hasData) return CircularProgressIndicator();
 
-            var lsCategories = categoryListSnap.data;
+            var lsCategories = categoryListSnap.data!;
+
+            if (lsCategories.isEmpty) {
+              return const Expanded(
+                child: Center(child: Text("No categories yet")),
+              );
+            }
 
             return Expanded(
               child: ListView.builder(
@@ -68,25 +82,34 @@ class _CategoryPageState extends State<CategoryPage> {
                             color: Colors.white)),
                     margin: const EdgeInsets.all(12.0),
                     child: ListTile(
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => AddCategory(
+                                      categoryBloc: _categoryBloc,
+                                      categoryToEdit: category,
+                                    )));
+                      },
                       leading: Icon(
-                        IconData(category.iconCodePoint,
+                        IconData(
+                            category.iconCodePoint ?? Icons.category.codePoint,
                             fontFamily: 'MaterialIcons'),
                         color: Theme.of(context).colorScheme.secondary,
                       ),
                       title: Text(
-                        category.title,
-                        style: Theme.of(context).textTheme.bodyText2.copyWith(
+                        category.title ?? "",
+                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                             color: Theme.of(context).colorScheme.secondary),
                       ),
                       subtitle: Text(
-                        category.desc,
+                        category.desc ?? "",
                       ),
                       trailing: IconButton(
                         icon: const Icon(Icons.delete),
                         color: Theme.of(context).primaryColorLight,
                         onPressed: () =>
-                            _categoryBloc.deleteCategory(category.id),
+                            _categoryBloc.deleteCategory(category.id!),
                       ),
                     ),
                   );
