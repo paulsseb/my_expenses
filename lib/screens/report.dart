@@ -8,6 +8,7 @@ import 'package:my_expenses/blocs/expense_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:my_expenses/utils/currency.dart';
 
 class ReportPage extends StatefulWidget {
   const ReportPage({super.key});
@@ -29,8 +30,8 @@ class _ReportPageState extends State<ReportPage> {
     _expenseBloc = ExpenseBloc(ExpenseService());
     _categoryBloc = CategoryBloc(CategoryService());
     _expenseBloc.getExpenses();
-    _categoryTooltip = TooltipBehavior(enable: true);
-    _timeTooltip = TooltipBehavior(enable: true);
+    _categoryTooltip = TooltipBehavior(enable: true, builder: _tooltipBuilder);
+    _timeTooltip = TooltipBehavior(enable: true, builder: _tooltipBuilder);
     _reportStream = Rx.combineLatest2(
         _categoryBloc.categoryListStream,
         _expenseBloc.expenseListStream,
@@ -41,6 +42,19 @@ class _ReportPageState extends State<ReportPage> {
   @override
   Widget build(BuildContext context) {
     return _getReportTab();
+  }
+
+  /// Charts would otherwise show the raw double, e.g. 1234567.0.
+  Widget _tooltipBuilder(dynamic data, dynamic point, dynamic series,
+      int pointIndex, int seriesIndex) {
+    var chartData = data as _ChartData;
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Text(
+        "${chartData.x}\n${formatCurrency(chartData.y)}",
+        style: const TextStyle(color: Colors.white),
+      ),
+    );
   }
 
   Widget _getReportTab() {
@@ -77,14 +91,19 @@ class _ReportPageState extends State<ReportPage> {
               SizedBox(
                 height: 300,
                 child: SfCartesianChart(
-                  primaryXAxis: CategoryAxis(),
-                  primaryYAxis: NumericAxis(),
+                  primaryXAxis: const CategoryAxis(),
+                  primaryYAxis: NumericAxis(
+                      numberFormat: compactNumberFormat,
+                      title: const AxisTitle(text: currencySymbol)),
                   tooltipBehavior: _categoryTooltip,
                   series: <CartesianSeries<_ChartData, String>>[
                     ColumnSeries<_ChartData, String>(
                       dataSource: categoryData,
                       xValueMapper: (_ChartData d, _) => d.x,
                       yValueMapper: (_ChartData d, _) => d.y,
+                      dataLabelMapper: (_ChartData d, _) => formatAmount(d.y),
+                      dataLabelSettings:
+                          const DataLabelSettings(isVisible: true),
                       name: 'Spend',
                       color: const Color.fromRGBO(8, 142, 255, 1),
                     )
@@ -99,8 +118,10 @@ class _ReportPageState extends State<ReportPage> {
               SizedBox(
                 height: 300,
                 child: SfCartesianChart(
-                  primaryXAxis: CategoryAxis(),
-                  primaryYAxis: NumericAxis(),
+                  primaryXAxis: const CategoryAxis(),
+                  primaryYAxis: NumericAxis(
+                      numberFormat: compactNumberFormat,
+                      title: const AxisTitle(text: currencySymbol)),
                   tooltipBehavior: _timeTooltip,
                   series: <CartesianSeries<_ChartData, String>>[
                     LineSeries<_ChartData, String>(

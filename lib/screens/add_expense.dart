@@ -11,6 +11,7 @@ import 'package:my_expenses/models/expense_model.dart';
 
 import 'package:my_expenses/models/category_model.dart';
 import 'package:my_expenses/blocs/category_bloc.dart';
+import 'package:my_expenses/utils/currency.dart';
 
 class AddExpense extends StatefulWidget {
   final ExpenseBloc expenseBloc;
@@ -28,11 +29,11 @@ class AddExpense extends StatefulWidget {
 }
 
 class _AddExpenseState extends State<AddExpense> {
-  FocusNode _focus = new FocusNode();
+  final FocusNode _focus = FocusNode();
   bool _showKeyboard = false;
-  TextEditingController _amountTextController = TextEditingController();
-  TextEditingController _titleTextController = TextEditingController();
-  TextEditingController _notesTextController = TextEditingController();
+  final TextEditingController _amountTextController = TextEditingController();
+  final TextEditingController _titleTextController = TextEditingController();
+  final TextEditingController _notesTextController = TextEditingController();
   AsyncSnapshot<ExpenseModel>? expenseSnap;
 
   bool get _isEditing => widget.expenseToEdit != null;
@@ -46,7 +47,8 @@ class _AddExpenseState extends State<AddExpense> {
       selectedCategoryId = editing.categoryId ?? 0;
       _selectedDate =
           editing.date == null ? DateTime.now() : DateTime.parse(editing.date!);
-      _amountTextController.text = editing.amount?.toString() ?? "";
+      _amountTextController.text =
+          editing.amount == null ? "" : formatAmount(editing.amount);
       _titleTextController.text = editing.title ?? "";
       _notesTextController.text = editing.notes ?? "";
     } else {
@@ -65,6 +67,13 @@ class _AddExpenseState extends State<AddExpense> {
 
   int selectedCategoryId = 0;
   DateTime _selectedDate = DateTime.now();
+
+  void _onAmountChanged(String text, ExpenseModel expense) {
+    var parsedAmount = parseAmount(text);
+    if (parsedAmount == null) return;
+    widget.expenseBloc
+        .updateCreateExpense(expense.rebuild((b) => b..amount = parsedAmount));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -128,7 +137,7 @@ class _AddExpenseState extends State<AddExpense> {
               Column(
                 children: <Widget>[
                   Container(
-                      padding: EdgeInsets.all(12.0),
+                      padding: const EdgeInsets.all(12.0),
                       child: StreamBuilder(
                         stream: widget.expenseBloc.createExpenseStream,
                         builder:
@@ -156,14 +165,14 @@ class _AddExpenseState extends State<AddExpense> {
                                           context: context,
                                           builder: (BuildContext context) {
                                             return AlertDialog(
-                                                title: Text('Date picker'),
-                                                content: Container(
+                                                title: const Text('Date picker'),
+                                                content: SizedBox(
                                                   height: 350,
                                                   child: Column(
                                                     children: <Widget>[
                                                       getDateRangePicker(),
                                                       MaterialButton(
-                                                        child: Text("OK"),
+                                                        child: const Text("OK"),
                                                         onPressed: () {
                                                           Navigator.pop(
                                                               context);
@@ -181,23 +190,20 @@ class _AddExpenseState extends State<AddExpense> {
                                   controller: _amountTextController,
                                   focusNode: _focus,
                                   keyboardType: TextInputType.number,
+                                  inputFormatters: const [
+                                    ThousandsSeparatorInputFormatter()
+                                  ],
                                   decoration: const InputDecoration(
                                     labelText: "Amount",
+                                    prefixText: "$currencySymbol ",
                                   ),
                                   maxLines: 1,
-                                  onChanged: (String text) {
-                                    var parsedAmount = double.tryParse(text);
-                                    if (parsedAmount == null) return;
-                                    var amount = expenseSnap2.data!;
-                                    var upated = amount
-                                        .rebuild((b) => b..amount = parsedAmount);
-                                    widget.expenseBloc
-                                        .updateCreateExpense(upated);
-                                  }),
+                                  onChanged: (String text) =>
+                                      _onAmountChanged(text, expenseSnap2.data!)),
                               TextField(
                                   controller: _titleTextController,
                                   decoration:
-                                      InputDecoration(labelText: "Title"),
+                                      const InputDecoration(labelText: "Title"),
                                   onChanged: (String text) {
                                     if (text.trim() == "") return;
                                     var title = expenseSnap2.data!;
@@ -209,7 +215,7 @@ class _AddExpenseState extends State<AddExpense> {
                               TextField(
                                   controller: _notesTextController,
                                   decoration:
-                                      InputDecoration(labelText: "Notes"),
+                                      const InputDecoration(labelText: "Notes"),
                                   maxLines: 2,
                                   onChanged: (String text) {
                                     if (text.trim() == "") return;
@@ -220,7 +226,6 @@ class _AddExpenseState extends State<AddExpense> {
                                         .updateCreateExpense(upated);
                                   }),
                               ElevatedButton(
-                                child: Text(_isEditing ? "Save" : "Create"),
                                 onPressed: expenseSnap2.data!.title == null
                                     ? null
                                     : () async {
@@ -254,6 +259,7 @@ class _AddExpenseState extends State<AddExpense> {
                                                       "Something went wrong: $err")));
                                         }
                                       },
+                                child: Text(_isEditing ? "Save" : "Create"),
                               ),
                             ],
                           );
@@ -268,7 +274,7 @@ class _AddExpenseState extends State<AddExpense> {
   }
 
   Widget getDateRangePicker() {
-    return Container(
+    return SizedBox(
         width: 350.0,
         height: 300.0,
         child: Card(
@@ -295,12 +301,7 @@ class _AddExpenseState extends State<AddExpense> {
   }
 
   Widget _shortcutKeyboard() {
-    var keyboardKeys = [
-      "50",
-      "100",
-      "500",
-      "1000",
-    ];
+    var keyboardKeys = [50, 100, 500, 1000];
     return Container(
         height: 53.0,
         decoration: BoxDecoration(
@@ -311,6 +312,7 @@ class _AddExpenseState extends State<AddExpense> {
           itemCount: keyboardKeys.length,
           itemBuilder: (_, index) {
             var key = keyboardKeys[index];
+            var label = formatAmount(key);
             return Container(
               padding: const EdgeInsets.symmetric(horizontal: 6.0),
               decoration: BoxDecoration(
@@ -323,12 +325,14 @@ class _AddExpenseState extends State<AddExpense> {
                   setState(() {
                     _amountTextController.value =
                         _amountTextController.value.copyWith(
-                      text: key,
-                      selection: TextSelection.collapsed(offset: key.length),
+                      text: label,
+                      selection: TextSelection.collapsed(offset: label.length),
                     );
                   });
+                  var expense = expenseSnap?.data;
+                  if (expense != null) _onAmountChanged(label, expense);
                 },
-                child: Text(key),
+                child: Text(label),
               ),
             );
           },

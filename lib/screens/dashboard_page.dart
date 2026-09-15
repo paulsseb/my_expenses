@@ -11,6 +11,7 @@ import 'package:my_expenses/db/services/expense_service.dart';
 import 'package:my_expenses/db/services/category_service.dart';
 import 'package:my_expenses/blocs/category_bloc.dart';
 import 'package:my_expenses/blocs/expense_bloc.dart';
+import 'package:my_expenses/utils/currency.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({Key? key}) : super(key: key);
@@ -86,7 +87,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     child: MaterialButton(
                       child: Container(
                         child: _selectedDate == null
-                            ? Text('Select a date')
+                            ? const Text('Select a date')
                             : Text(_selectedDate),
                       ),
                       onPressed: () {
@@ -94,14 +95,14 @@ class _DashboardPageState extends State<DashboardPage> {
                             context: context,
                             builder: (BuildContext context) {
                               return AlertDialog(
-                                  title: Text('Date picker'),
-                                  content: Container(
+                                  title: const Text('Date picker'),
+                                  content: SizedBox(
                                     height: 350,
                                     child: Column(
                                       children: <Widget>[
                                         getDateRangePicker(),
                                         MaterialButton(
-                                          child: Text("OK"),
+                                          child: const Text("OK"),
                                           onPressed: () {
                                             Navigator.pop(context);
                                           },
@@ -128,7 +129,7 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   Widget getDateRangePicker() {
-    return Container(
+    return SizedBox(
         width: 350.0,
         height: 300.0,
         child: Card(
@@ -207,7 +208,7 @@ class _DashboardPageState extends State<DashboardPage> {
                             _expenseBloc.deleteExpense(expense.id!),
                       ),
                       title: Text(
-                        "${expense.title} - Ugx.${expense.amount}",
+                        "${expense.title} - ${formatCurrency(expense.amount)}",
                         style: Theme.of(context).textTheme.bodyLarge,
                       ),
                       subtitle: Text(

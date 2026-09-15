@@ -19,11 +19,11 @@ class CategoryService implements CategoryServiceBase {
     if (res.isEmpty) return BuiltList();
 
     var list = BuiltList<CategoryModel>();
-    res.forEach((cat) {
+    for (var cat in res) {
       var category = serializers.deserializeWith<CategoryModel>(
           CategoryModel.serializer, cat)!;
       list = list.rebuild((b) => b..add(category));
-    });
+    }
 
     return list.rebuild(
         (b) => b..sort((a, b) => (a.title ?? "").compareTo(b.title ?? "")));
